@@ -1,0 +1,43 @@
+{
+  "params": {
+    "c_int": 5.0,
+    "c_fail_base": 12.0,
+    "lambda_forget": 0.05,
+    "f0_base": 0.3,
+    "k_memory": 2.0
+  },
+  "results": {
+    "Random": {
+      "mean_reward": -87.38,
+      "std_reward": 23.35713167321707,
+      "mean_interruptions": 9.11,
+      "std_interruptions": 3.475327322713646,
+      "mean_failures": 1.2,
+      "std_failures": 1.0
+    },
+    "Proactive": {
+      "mean_reward": -91.64,
+      "std_reward": 20.41299586048065,
+      "mean_interruptions": 13.07,
+      "std_interruptions": 2.585556033042023,
+      "mean_failures": 0.62,
+      "std_failures": 0.6289674077406554
+    },
+    "Reactive": {
+      "mean_reward": -75.85,
+      "std_reward": 20.541360714422012,
+      "mean_interruptions": 7.01,
+      "std_interruptions": 1.584266391740985,
+      "mean_failures": 0.96,
+      "std_failures": 0.8708616422830896
+    },
+    "RL_PPO": {
+      "mean_reward": -58.92,
+      "std_reward": 17.466356231338008,
+      "mean_interruptions": 0.0,
+      "std_interruptions": 0.0,
+      "mean_failures": 1.46,
+      "std_failures": 0.9941830817309255
+    }
+  }
+}

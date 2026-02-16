@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# Data files (large)
+models/*/
+*.zip
+*.pth
+
+# Logs
+data/logs/*.txt
+*.log
+
+# Results (optional - may want to track some)
+results/videos/*.mp4
+
+# System files
+.DS_Store
+.vscode/
+.claude/
+
+# TensorBoard
+models/tensorboard/
+
+# Temporary files
+*.tmp
+*.bak
+*~

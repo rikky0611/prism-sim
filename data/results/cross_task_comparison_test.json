@@ -1,0 +1,325 @@
+{
+  "metadata": {
+    "cost_regime": "test",
+    "n_episodes": 10,
+    "evaluated_at": "2026-02-16T12:07:49.270742",
+    "duration_seconds": 0.696662
+  },
+  "params": {
+    "lambda_forget": 0.05,
+    "f0_base": 0.3,
+    "k_memory": 2.0
+  },
+  "tasks": {
+    "latte_making": {
+      "n_steps": 20,
+      "domain": "technical",
+      "base_failure_cost": 25.0,
+      "interruption_cost": 5.0
+    },
+    "make_cereal": {
+      "n_steps": 8,
+      "domain": "cooking",
+      "base_failure_cost": 10.0,
+      "interruption_cost": 5.0
+    },
+    "make_coffee": {
+      "n_steps": 8,
+      "domain": "cooking",
+      "base_failure_cost": 12.0,
+      "interruption_cost": 5.0
+    },
+    "make_sandwich": {
+      "n_steps": 9,
+      "domain": "cooking",
+      "base_failure_cost": 15.0,
+      "interruption_cost": 5.0
+    },
+    "make_stencil": {
+      "n_steps": 17,
+      "domain": "crafting",
+      "base_failure_cost": 30.0,
+      "interruption_cost": 5.0
+    },
+    "make_tea": {
+      "n_steps": 9,
+      "domain": "cooking",
+      "base_failure_cost": 12.0,
+      "interruption_cost": 5.0
+    },
+    "cooking": {
+      "n_steps": 14,
+      "domain": "cooking",
+      "base_failure_cost": 20.0,
+      "interruption_cost": 5.0
+    }
+  },
+  "results": {
+    "latte_making": {
+      "Random": {
+        "mean_reward": -542.0,
+        "std_reward": 127.81901267025967,
+        "mean_interruptions": 49.8,
+        "std_interruptions": 10.43839068055991,
+        "mean_failures": 5.3,
+        "std_failures": 2.325940669922601,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -530.25,
+        "std_reward": 60.70100905256848,
+        "mean_interruptions": 65.2,
+        "std_interruptions": 7.730459236035076,
+        "mean_failures": 3.4,
+        "std_failures": 1.2806248474865698,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -492.35,
+        "std_reward": 67.24992565051652,
+        "mean_interruptions": 43.5,
+        "std_interruptions": 5.103920062069938,
+        "mean_failures": 4.3,
+        "std_failures": 1.4866068747318506,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_latte_making_test/final_model.zip'"
+      }
+    },
+    "make_cereal": {
+      "Random": {
+        "mean_reward": -163.9,
+        "std_reward": 37.08220597537315,
+        "mean_interruptions": 21.2,
+        "std_interruptions": 5.325410782277739,
+        "mean_failures": 1.6,
+        "std_failures": 1.019803902718557,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -143.8,
+        "std_reward": 23.335809392433767,
+        "mean_interruptions": 21.3,
+        "std_interruptions": 2.8301943396169813,
+        "mean_failures": 1.2,
+        "std_failures": 0.8717797887081348,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -124.9,
+        "std_reward": 27.145717894356746,
+        "mean_interruptions": 13.2,
+        "std_interruptions": 2.6381811916545836,
+        "mean_failures": 1.4,
+        "std_failures": 0.66332495807108,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_make_cereal_test/final_model.zip'"
+      }
+    },
+    "make_coffee": {
+      "Random": {
+        "mean_reward": -175.74,
+        "std_reward": 38.695844738162776,
+        "mean_interruptions": 21.2,
+        "std_interruptions": 5.325410782277739,
+        "mean_failures": 1.6,
+        "std_failures": 1.019803902718557,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -152.45999999999998,
+        "std_reward": 26.1926783662916,
+        "mean_interruptions": 21.3,
+        "std_interruptions": 2.8301943396169813,
+        "mean_failures": 1.2,
+        "std_failures": 0.8717797887081348,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -133.3,
+        "std_reward": 29.52534504455452,
+        "mean_interruptions": 13.2,
+        "std_interruptions": 2.6381811916545836,
+        "mean_failures": 1.4,
+        "std_failures": 0.66332495807108,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_make_coffee_test/final_model.zip'"
+      }
+    },
+    "make_sandwich": {
+      "Random": {
+        "mean_reward": -202.55,
+        "std_reward": 42.739589375659655,
+        "mean_interruptions": 23.0,
+        "std_interruptions": 5.585696017507576,
+        "mean_failures": 2.1,
+        "std_failures": 1.445683229480096,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -203.3,
+        "std_reward": 29.274733132857076,
+        "mean_interruptions": 27.6,
+        "std_interruptions": 2.727636339397171,
+        "mean_failures": 1.3,
+        "std_failures": 1.3453624047073711,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -153.0,
+        "std_reward": 23.562682360037027,
+        "mean_interruptions": 14.5,
+        "std_interruptions": 1.91049731745428,
+        "mean_failures": 1.6,
+        "std_failures": 0.66332495807108,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_make_sandwich_test/final_model.zip'"
+      }
+    },
+    "make_stencil": {
+      "Random": {
+        "mean_reward": -538.5,
+        "std_reward": 86.91403799156959,
+        "mean_interruptions": 42.2,
+        "std_interruptions": 7.756287771866127,
+        "mean_failures": 5.2,
+        "std_failures": 1.5362291495737217,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -440.3,
+        "std_reward": 61.011556282396214,
+        "mean_interruptions": 56.6,
+        "std_interruptions": 6.053098380168622,
+        "mean_failures": 1.3,
+        "std_failures": 1.0049875621120892,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -429.2,
+        "std_reward": 95.41048160448621,
+        "mean_interruptions": 32.9,
+        "std_interruptions": 3.590264614203248,
+        "mean_failures": 3.6,
+        "std_failures": 1.9078784028338913,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_make_stencil_test/final_model.zip'"
+      }
+    },
+    "make_tea": {
+      "Random": {
+        "mean_reward": -195.02,
+        "std_reward": 39.888188727993146,
+        "mean_interruptions": 23.0,
+        "std_interruptions": 5.585696017507576,
+        "mean_failures": 2.1,
+        "std_failures": 1.445683229480096,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -196.3,
+        "std_reward": 27.37170071442401,
+        "mean_interruptions": 27.6,
+        "std_interruptions": 2.727636339397171,
+        "mean_failures": 1.3,
+        "std_failures": 1.3453624047073711,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -145.82,
+        "std_reward": 23.132219953994905,
+        "mean_interruptions": 14.5,
+        "std_interruptions": 1.91049731745428,
+        "mean_failures": 1.6,
+        "std_failures": 0.66332495807108,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_make_tea_test/final_model.zip'"
+      }
+    },
+    "cooking": {
+      "Random": {
+        "mean_reward": -360.8,
+        "std_reward": 81.61102866647376,
+        "mean_interruptions": 34.0,
+        "std_interruptions": 6.496152707564686,
+        "mean_failures": 3.8,
+        "std_failures": 2.1354156504062622,
+        "error": null
+      },
+      "Proactive": {
+        "mean_reward": -345.7,
+        "std_reward": 42.79263955401676,
+        "mean_interruptions": 42.5,
+        "std_interruptions": 5.953990258641679,
+        "mean_failures": 2.1,
+        "std_failures": 0.8306623862918074,
+        "error": null
+      },
+      "Reactive": {
+        "mean_reward": -301.4,
+        "std_reward": 43.25551987897036,
+        "mean_interruptions": 27.1,
+        "std_interruptions": 4.570557952810575,
+        "mean_failures": 2.6,
+        "std_failures": 1.2806248474865698,
+        "error": null
+      },
+      "RL_PPO": {
+        "mean_reward": -Infinity,
+        "std_reward": 0.0,
+        "mean_interruptions": 0.0,
+        "std_interruptions": 0.0,
+        "mean_failures": 0.0,
+        "std_failures": 0.0,
+        "error": "[Errno 2] No such file or directory: '/Users/arakawariku/Dropbox/Research/Antti/models/ppo_cooking_test/final_model.zip'"
+      }
+    }
+  }
+}

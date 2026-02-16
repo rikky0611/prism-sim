@@ -1,0 +1,164 @@
+{
+  "very_high_stakes": {
+    "Random": {
+      "mean_reward": -131.69,
+      "std_reward": 33.477961407469245,
+      "mean_interruptions": 9.11,
+      "mean_failures": 2.62
+    },
+    "Proactive": {
+      "mean_reward": -100.3,
+      "std_reward": 31.653909711124154,
+      "mean_interruptions": 16.53,
+      "mean_failures": 1.33
+    },
+    "Reactive": {
+      "mean_reward": -106.69,
+      "std_reward": 32.9398527622696,
+      "mean_interruptions": 13.04,
+      "mean_failures": 1.67
+    },
+    "RL_PPO": {
+      "mean_reward": -129.71,
+      "std_reward": 34.50573720412303,
+      "mean_interruptions": 19.8,
+      "mean_failures": 2.25
+    }
+  },
+  "high_stakes": {
+    "Random": {
+      "mean_reward": -105.3,
+      "std_reward": 24.79455585405796,
+      "mean_interruptions": 9.11,
+      "mean_failures": 2.62
+    },
+    "Proactive": {
+      "mean_reward": -86.61,
+      "std_reward": 24.53686817831485,
+      "mean_interruptions": 16.53,
+      "mean_failures": 1.33
+    },
+    "Reactive": {
+      "mean_reward": -89.85,
+      "std_reward": 24.865387589981378,
+      "mean_interruptions": 13.04,
+      "mean_failures": 1.67
+    },
+    "RL_PPO": {
+      "mean_reward": -102.86,
+      "std_reward": 25.640210607559368,
+      "mean_interruptions": 16.9,
+      "mean_failures": 2.16
+    }
+  },
+  "moderate_high": {
+    "Random": {
+      "mean_reward": -100.69,
+      "std_reward": 22.69083295077552,
+      "mean_interruptions": 9.11,
+      "mean_failures": 2.62
+    },
+    "Proactive": {
+      "mean_reward": -95.56,
+      "std_reward": 24.323371476832726,
+      "mean_interruptions": 16.53,
+      "mean_failures": 1.33
+    },
+    "Reactive": {
+      "mean_reward": -93.99,
+      "std_reward": 23.617576082231636,
+      "mean_interruptions": 13.04,
+      "mean_failures": 1.67
+    },
+    "RL_PPO": {
+      "mean_reward": -89.63,
+      "std_reward": 20.917769957622156,
+      "mean_interruptions": 0.0,
+      "mean_failures": 3.01
+    }
+  },
+  "balanced": {
+    "Random": {
+      "mean_reward": -118.53,
+      "std_reward": 27.080419125264658,
+      "mean_interruptions": 9.11,
+      "mean_failures": 2.62
+    },
+    "Proactive": {
+      "mean_reward": -128.62,
+      "std_reward": 31.231964395471508,
+      "mean_interruptions": 16.53,
+      "mean_failures": 1.33
+    },
+    "Reactive": {
+      "mean_reward": -120.07,
+      "std_reward": 28.961096319027707,
+      "mean_interruptions": 13.04,
+      "mean_failures": 1.67
+    },
+    "RL_PPO": {
+      "mean_reward": -89.63,
+      "std_reward": 20.917769957622156,
+      "mean_interruptions": 0.0,
+      "mean_failures": 3.01
+    }
+  },
+  "moderate_low": {
+    "Random": {
+      "mean_reward": -103.87,
+      "std_reward": 24.241144774948232,
+      "mean_interruptions": 9.11,
+      "mean_failures": 2.62
+    },
+    "Proactive": {
+      "mean_reward": -118.64,
+      "std_reward": 28.47578620512522,
+      "mean_interruptions": 16.53,
+      "mean_failures": 1.33
+    },
+    "Reactive": {
+      "mean_reward": -109.35,
+      "std_reward": 26.341364808984366,
+      "mean_interruptions": 13.04,
+      "mean_failures": 1.67
+    },
+    "RL_PPO": {
+      "mean_reward": -74.26,
+      "std_reward": 16.90657860124277,
+      "mean_interruptions": 0.0,
+      "mean_failures": 3.01
+    }
+  },
+  "config": {
+    "f0_base": 0.6,
+    "lambda_forget": 0.1,
+    "k_memory": 2.0
+  },
+  "regimes": {
+    "very_high_stakes": {
+      "c_int": 2,
+      "c_fail": 30,
+      "description": "Surgery - expect many interventions"
+    },
+    "high_stakes": {
+      "c_int": 2,
+      "c_fail": 20,
+      "description": "Critical task - expect proactive"
+    },
+    "moderate_high": {
+      "c_int": 3,
+      "c_fail": 15,
+      "description": "Important task - expect selective"
+    },
+    "balanced": {
+      "c_int": 5,
+      "c_fail": 15,
+      "description": "Balanced - expect some intervention"
+    },
+    "moderate_low": {
+      "c_int": 5,
+      "c_fail": 10,
+      "description": "Casual task - expect minimal"
+    }
+  }
+}

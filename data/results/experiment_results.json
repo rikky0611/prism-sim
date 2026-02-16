@@ -1,0 +1,97 @@
+{
+  "experiments": {
+    "exp1_cost_comparison": {
+      "Low c_int (2)": {
+        "mean_reward": -64.2,
+        "std_reward": 13.577923257994943,
+        "mean_failures": 0.8,
+        "mean_interactions": 12.6,
+        "mean_episode_length": 41.45
+      },
+      "Medium c_int (5)": {
+        "mean_reward": -102.05,
+        "std_reward": 22.296804703813503,
+        "mean_failures": 0.45,
+        "mean_interactions": 13.4,
+        "mean_episode_length": 45.35
+      },
+      "High c_int (15)": {
+        "mean_reward": -240.6,
+        "std_reward": 30.18012591093682,
+        "mean_failures": 0.7,
+        "mean_interactions": 13.35,
+        "mean_episode_length": 45.4
+      }
+    },
+    "exp2_policy_comparison": {
+      "Random": {
+        "mean_reward": -143.2,
+        "std_reward": 45.516590381969515,
+        "mean_failures": 1.55,
+        "mean_interactions": 5.2,
+        "mean_episode_length": 39.65
+      },
+      "Proactive": {
+        "mean_reward": -250.6,
+        "std_reward": 46.382539818341115,
+        "mean_failures": 0.95,
+        "mean_interactions": 13.55,
+        "mean_episode_length": 44.6
+      },
+      "Reactive": {
+        "mean_reward": -183.45,
+        "std_reward": 33.96538679302798,
+        "mean_failures": 1.15,
+        "mean_interactions": 8.45,
+        "mean_episode_length": 43.05
+      }
+    },
+    "exp3_tradeoff": {
+      "Low fail / High int": {
+        "mean_reward": -51.3,
+        "std_reward": 11.726465793238813,
+        "mean_failures": 1.35,
+        "mean_interactions": 0.0,
+        "mean_episode_length": 43.9
+      },
+      "Balanced": {
+        "mean_reward": -165.25,
+        "std_reward": 24.145134085359725,
+        "mean_failures": 0.35,
+        "mean_interactions": 16.85,
+        "mean_episode_length": 48.35
+      },
+      "High fail / Low int": {
+        "mean_reward": -97.6,
+        "std_reward": 36.209667217471086,
+        "mean_failures": 0.7,
+        "mean_interactions": 13.65,
+        "mean_episode_length": 42.65
+      }
+    },
+    "exp4_memory": {
+      "Slow forget": {
+        "mean_reward": -113.95,
+        "std_reward": 14.430783069535762,
+        "mean_failures": 0.3,
+        "mean_interactions": 10.4,
+        "mean_episode_length": 41.8
+      },
+      "Medium forget": {
+        "mean_reward": -139.95,
+        "std_reward": 32.71616572888699,
+        "mean_failures": 0.9,
+        "mean_interactions": 12.45,
+        "mean_episode_length": 40.2
+      },
+      "Fast forget": {
+        "mean_reward": -152.6,
+        "std_reward": 49.8371347491005,
+        "mean_failures": 0.7,
+        "mean_interactions": 14.85,
+        "mean_episode_length": 39.6
+      }
+    }
+  },
+  "summary": {}
+}

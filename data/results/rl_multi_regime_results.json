@@ -1,0 +1,159 @@
+{
+  "high_stakes": {
+    "Random": {
+      "mean_reward": -73.95,
+      "std_reward": 23.766520569910945,
+      "mean_interruptions": 9.11,
+      "mean_failures": 1.2
+    },
+    "Proactive": {
+      "mean_reward": -63.13,
+      "std_reward": 18.18221933648365,
+      "mean_interruptions": 13.07,
+      "mean_failures": 0.62
+    },
+    "Reactive": {
+      "mean_reward": -67.98,
+      "std_reward": 23.76130467798433,
+      "mean_interruptions": 7.01,
+      "mean_failures": 0.96
+    },
+    "RL_PPO": {
+      "mean_reward": -73.36,
+      "std_reward": 24.043510558984515,
+      "mean_interruptions": 0.0,
+      "mean_failures": 1.46
+    }
+  },
+  "moderate": {
+    "Random": {
+      "mean_reward": -74.85,
+      "std_reward": 20.966819024353693,
+      "mean_interruptions": 9.11,
+      "mean_failures": 1.2
+    },
+    "Proactive": {
+      "mean_reward": -69.67,
+      "std_reward": 17.67204289265958,
+      "mean_interruptions": 13.07,
+      "mean_failures": 0.62
+    },
+    "Reactive": {
+      "mean_reward": -67.45,
+      "std_reward": 20.566659913559125,
+      "mean_interruptions": 7.01,
+      "mean_failures": 0.96
+    },
+    "RL_PPO": {
+      "mean_reward": -65.57,
+      "std_reward": 19.753103553619113,
+      "mean_interruptions": 2.14,
+      "mean_failures": 1.32
+    }
+  },
+  "balanced": {
+    "Random": {
+      "mean_reward": -87.38,
+      "std_reward": 23.35713167321707,
+      "mean_interruptions": 9.11,
+      "mean_failures": 1.2
+    },
+    "Proactive": {
+      "mean_reward": -91.64,
+      "std_reward": 20.41299586048065,
+      "mean_interruptions": 13.07,
+      "mean_failures": 0.62
+    },
+    "Reactive": {
+      "mean_reward": -75.85,
+      "std_reward": 20.541360714422012,
+      "mean_interruptions": 7.01,
+      "mean_failures": 0.96
+    },
+    "RL_PPO": {
+      "mean_reward": -58.92,
+      "std_reward": 17.466356231338008,
+      "mean_interruptions": 0.0,
+      "mean_failures": 1.46
+    }
+  },
+  "low_stakes": {
+    "Random": {
+      "mean_reward": -78.08,
+      "std_reward": 21.380215153267283,
+      "mean_interruptions": 9.11,
+      "mean_failures": 1.2
+    },
+    "Proactive": {
+      "mean_reward": -85.45,
+      "std_reward": 18.383892406125533,
+      "mean_interruptions": 13.07,
+      "mean_failures": 0.62
+    },
+    "Reactive": {
+      "mean_reward": -66.51,
+      "std_reward": 17.25948724614958,
+      "mean_interruptions": 7.01,
+      "mean_failures": 0.96
+    },
+    "RL_PPO": {
+      "mean_reward": -47.11,
+      "std_reward": 13.540232642019118,
+      "mean_interruptions": 0.0,
+      "mean_failures": 1.46
+    }
+  },
+  "high_cost_int": {
+    "Random": {
+      "mean_reward": -132.93,
+      "std_reward": 38.48226994344278,
+      "mean_interruptions": 9.11,
+      "mean_failures": 1.2
+    },
+    "Proactive": {
+      "mean_reward": -156.99,
+      "std_reward": 32.55871465521942,
+      "mean_interruptions": 13.07,
+      "mean_failures": 0.62
+    },
+    "Reactive": {
+      "mean_reward": -110.9,
+      "std_reward": 27.15161137022994,
+      "mean_interruptions": 7.01,
+      "mean_failures": 0.96
+    },
+    "RL_PPO": {
+      "mean_reward": -58.92,
+      "std_reward": 17.466356231338008,
+      "mean_interruptions": 0.0,
+      "mean_failures": 1.46
+    }
+  },
+  "regimes": {
+    "high_stakes": {
+      "c_int": 2,
+      "c_fail": 20,
+      "description": "Surgery/critical - expect proactive"
+    },
+    "moderate": {
+      "c_int": 3,
+      "c_fail": 15,
+      "description": "Important task - expect selective"
+    },
+    "balanced": {
+      "c_int": 5,
+      "c_fail": 12,
+      "description": "Balanced - baseline test"
+    },
+    "low_stakes": {
+      "c_int": 5,
+      "c_fail": 8,
+      "description": "Casual task - expect some intervention"
+    },
+    "high_cost_int": {
+      "c_int": 10,
+      "c_fail": 12,
+      "description": "Deep work - expect minimal"
+    }
+  }
+}

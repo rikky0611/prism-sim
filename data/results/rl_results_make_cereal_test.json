@@ -1,0 +1,46 @@
+{
+  "task": "make_cereal",
+  "n_steps": 8,
+  "domain": "cooking",
+  "params": {
+    "c_int": 5.0,
+    "c_fail_base": 10.0,
+    "lambda_forget": 0.05,
+    "f0_base": 0.3,
+    "k_memory": 2.0
+  },
+  "results": {
+    "Random": {
+      "mean_reward": -162.35,
+      "std_reward": 35.74755236376331,
+      "mean_interruptions": 21.09,
+      "std_interruptions": 5.829399626033542,
+      "mean_failures": 1.73,
+      "std_failures": 1.0756858277396797
+    },
+    "Proactive": {
+      "mean_reward": -153.07,
+      "std_reward": 27.787498987854235,
+      "mean_interruptions": 23.05,
+      "std_interruptions": 3.8062448686336516,
+      "mean_failures": 1.02,
+      "std_failures": 0.7997499609252883
+    },
+    "Reactive": {
+      "mean_reward": -130.64,
+      "std_reward": 27.651951106567505,
+      "mean_interruptions": 13.62,
+      "std_interruptions": 2.7304944607158608,
+      "mean_failures": 1.68,
+      "std_failures": 1.2073110618229255
+    },
+    "RL_PPO": {
+      "mean_reward": -283.55,
+      "std_reward": 74.48629068493074,
+      "mean_interruptions": 47.71,
+      "std_interruptions": 15.010193203286892,
+      "mean_failures": 2.23,
+      "std_failures": 1.164946350696031
+    }
+  }
+}
