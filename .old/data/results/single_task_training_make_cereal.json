@@ -1,0 +1,51 @@
+{
+  "task": "make_cereal",
+  "n_steps": 8,
+  "timesteps_per_model": 200000,
+  "total_models": 3,
+  "results": [
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_cereal/final_model",
+      "duration_sec": 351.7129783630371,
+      "timesteps": 200000,
+      "regime_config": {
+        "c_fail": 30.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Surgery/Critical - failures extremely costly (c_int=1 fixed)"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_cereal/final_model",
+      "duration_sec": 347.62673449516296,
+      "timesteps": 200000,
+      "regime_config": {
+        "c_fail": 15.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_cereal/final_model",
+      "duration_sec": 347.1341459751129,
+      "timesteps": 200000,
+      "regime_config": {
+        "c_fail": 10.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Casual task - low stakes (c_int=1 fixed)"
+      }
+    }
+  ],
+  "total_duration_sec": 1046.4782135486603
+}

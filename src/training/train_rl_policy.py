@@ -45,8 +45,11 @@ class GymWrapperEnv(gym.Env):
         self.task_def = task_def
         self.n_steps = task_def.n_steps
 
-        # Apply task-specific defaults
-        params.apply_task_defaults(task_def)
+        # NOTE: No longer calling apply_task_defaults() - c_fail_per_step set directly
+        # Ensure c_fail_per_step matches task n_steps
+        if len(params.c_fail_per_step) != self.n_steps:
+            raise ValueError(f"c_fail_per_step length ({len(params.c_fail_per_step)}) "
+                           f"must match task n_steps ({self.n_steps})")
 
         self.env = ProcedureAssistantEnv(params, task_def)
         self.params = params

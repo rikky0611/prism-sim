@@ -1,0 +1,494 @@
+{
+  "metadata": {
+    "experiment_type": "cross_task_multi_regime",
+    "n_tasks": 7,
+    "n_regimes": 3,
+    "n_models": 21,
+    "timesteps_per_model": 50000,
+    "created_at": "2026-02-16 19:46:31",
+    "resume_mode": false,
+    "total_training_duration_seconds": 1920.8031842708588,
+    "total_training_duration_minutes": 32.013386404514314,
+    "successful_models": 21,
+    "failed_models": 0,
+    "skipped_models": 0
+  },
+  "regimes": {
+    "very_high_stakes": {
+      "c_int": 2.0,
+      "c_fail": 30.0,
+      "ratio": 15.0,
+      "f0_base": 0.6,
+      "lambda_forget": 0.1,
+      "description": "Surgery/Critical - failures extremely costly"
+    },
+    "balanced": {
+      "c_int": 5.0,
+      "c_fail": 15.0,
+      "ratio": 3.0,
+      "f0_base": 0.6,
+      "lambda_forget": 0.1,
+      "description": "Standard assistance - balanced costs"
+    },
+    "moderate_low": {
+      "c_int": 5.0,
+      "c_fail": 10.0,
+      "ratio": 2.0,
+      "f0_base": 0.6,
+      "lambda_forget": 0.1,
+      "description": "Casual task - low stakes"
+    }
+  },
+  "tasks": {
+    "make_cereal": {
+      "n_steps": 8,
+      "domain": "cooking"
+    },
+    "make_coffee": {
+      "n_steps": 8,
+      "domain": "cooking"
+    },
+    "make_tea": {
+      "n_steps": 9,
+      "domain": "cooking"
+    },
+    "make_sandwich": {
+      "n_steps": 9,
+      "domain": "cooking"
+    },
+    "cooking": {
+      "n_steps": 14,
+      "domain": "cooking"
+    },
+    "make_stencil": {
+      "n_steps": 17,
+      "domain": "crafting"
+    },
+    "latte_making": {
+      "n_steps": 20,
+      "domain": "technical"
+    }
+  },
+  "training_log": [
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_cereal/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.69385957717896,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_coffee",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_coffee/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 89.14102053642273,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_tea",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_tea/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 89.99662709236145,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_sandwich",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_sandwich/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 88.88737058639526,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "cooking",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/cooking/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 91.56670236587524,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 14,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_stencil",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_stencil/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 93.87214732170105,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 17,
+        "domain": "crafting"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/latte_making/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 93.54042196273804,
+      "regime_config": {
+        "c_int": 2.0,
+        "c_fail": 30.0,
+        "ratio": 15.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Surgery/Critical - failures extremely costly"
+      },
+      "task_config": {
+        "n_steps": 20,
+        "domain": "technical"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_cereal/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 88.46462821960449,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_coffee",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_coffee/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 91.76432728767395,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_tea",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_tea/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.40699791908264,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_sandwich",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_sandwich/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.2784059047699,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "cooking",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/cooking/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 92.36702394485474,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 14,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_stencil",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_stencil/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 93.50438570976257,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 17,
+        "domain": "crafting"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/latte_making/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 93.69173216819763,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 15.0,
+        "ratio": 3.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Standard assistance - balanced costs"
+      },
+      "task_config": {
+        "n_steps": 20,
+        "domain": "technical"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_cereal",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_cereal/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 89.8198184967041,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_coffee",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_coffee/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.24133491516113,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 8,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_tea",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_tea/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.68208742141724,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_sandwich",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_sandwich/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 90.53052234649658,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 9,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "cooking",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/cooking/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 92.32771730422974,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 14,
+        "domain": "cooking"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "make_stencil",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_stencil/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 93.77667164802551,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 17,
+        "domain": "crafting"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/latte_making/final_model",
+      "timesteps": 50000,
+      "duration_seconds": 95.23072218894958,
+      "regime_config": {
+        "c_int": 5.0,
+        "c_fail": 10.0,
+        "ratio": 2.0,
+        "f0_base": 0.6,
+        "lambda_forget": 0.1,
+        "description": "Casual task - low stakes"
+      },
+      "task_config": {
+        "n_steps": 20,
+        "domain": "technical"
+      }
+    }
+  ]
+}

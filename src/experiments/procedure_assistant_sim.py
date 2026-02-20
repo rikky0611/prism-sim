@@ -41,27 +41,36 @@ except ImportError:
 # ============================================================================
 class ProcedureAssistantState:
     """
-    Latent state: x_t = (s_t, tau_t, m_t)
+    Latent state: x_t = (s_t, tau_t, m_t, r_t)
     - s_t: current procedural step (or 'done')
     - tau_t: elapsed time in current step
-    - m_t: reminder memory for each step (N-dimensional vector)
+    - m_t: reminder memory for each step (N-dimensional vector, long-term)
+    - r_t: last reminded tick for each step (for recency calculation)
     """
     def __init__(self, n_steps: int):
         self.current_step: int = 0  # index into PROCEDURAL_STEPS
         self.tau: int = 0  # elapsed time in step
-        self.memory: np.ndarray = np.zeros(n_steps)  # memory for each step
+        self.memory: np.ndarray = np.zeros(n_steps)  # base memory for each step
+        self.last_reminded_tick: np.ndarray = np.full(n_steps, -999)  # NEW: Track reminder timing
+        self.global_tick: int = 0  # NEW: Global time counter
         self.is_done: bool = False
         self.total_failures: int = 0
         self.total_interactions: int = 0
+        self.total_responses: int = 0  # NEW: Track human responses to interruptions
+        self.total_narrations: int = 0  # NEW: Track human narrations
 
     def copy(self):
         new_state = ProcedureAssistantState(len(self.memory))
         new_state.current_step = self.current_step
         new_state.tau = self.tau
         new_state.memory = self.memory.copy()
+        new_state.last_reminded_tick = self.last_reminded_tick.copy()  # NEW
+        new_state.global_tick = self.global_tick  # NEW
         new_state.is_done = self.is_done
         new_state.total_failures = self.total_failures
         new_state.total_interactions = self.total_interactions
+        new_state.total_responses = self.total_responses  # NEW
+        new_state.total_narrations = self.total_narrations  # NEW
         return new_state
 
 
@@ -85,21 +94,23 @@ class SimulationParams:
     def __init__(
         self,
         # Memory dynamics
-        lambda_forget: float = 0.05,      # Forgetting rate per tick
-        delta_reminder: float = 0.3,       # Memory boost from reminder
+        lambda_forget: float = 0.03,      # Forgetting rate per tick (23-tick half-life → slower decay)
+        delta_reminder: float = 0.8,       # Memory boost from reminder (stronger, longer-lasting protection)
 
         # Failure model
-        f0_base: float = 0.3,             # Base failure probability
-        k_memory: float = 2.0,            # Memory effect on failure
+        f0_base: float = 0.6,             # Base failure probability (60% baseline when m=0) - INCREASED for better learning
+        k_memory: float = 3.0,            # Memory effect on failure (steeper curve, emphasizes timing)
 
-        # Cost structure
-        c_int: float = 5.0,               # Interruption cost
+        # Cost structure (UPDATED: per-step costs, fixed c_int)
+        c_fail_per_step: Optional[np.ndarray] = None,  # NEW: Per-step failure costs array
+        c_int: float = 1.0,               # Interruption cost (FIXED to 1.0)
         c_nar: float = 1.0,               # Narration cost (human-initiated)
         c_resp: float = 2.0,              # Response cost (to confirm)
-        c_fail_base: float = 20.0,        # Base failure cost
+        c_off_timing: float = 0.5,        # Penalty for reminding wrong step (off-timing)
 
-        # Step-specific failure costs (severity)
-        step_failure_costs: Optional[Dict[str, float]] = None,
+        # Deprecated parameters (backward compatibility)
+        c_fail_base: Optional[float] = None,  # DEPRECATED: Use c_fail_per_step instead
+        step_failure_costs: Optional[Dict[str, float]] = None,  # DEPRECATED
 
         # Human bounded rationality
         beta: float = 1.0,                # Rationality parameter
@@ -110,33 +121,42 @@ class SimulationParams:
         # Step duration parameters
         step_mean_duration: int = 30,     # Mean ticks per step
         step_std_duration: int = 10,      # Std dev of step duration
+
+        # NEW: Recency-based reminder effectiveness
+        lambda_recency: float = 0.20,     # Fast recency decay (half-life ~3.5 ticks)
+        effectiveness_recency: float = 0.95,  # Max additional prevention from recent reminder (95%)
     ):
         self.lambda_forget = lambda_forget
         self.delta_reminder = delta_reminder
         self.f0_base = f0_base
         self.k_memory = k_memory
-        self.c_int = c_int
+        self.c_int = c_int  # Fixed to 1.0
         self.c_nar = c_nar
         self.c_resp = c_resp
-        self.c_fail_base = c_fail_base
+        self.c_off_timing = c_off_timing  # Penalty for off-timing reminders
         self.beta = beta
         self.obs_noise = obs_noise
         self.step_mean_duration = step_mean_duration
         self.step_std_duration = step_std_duration
+        self.lambda_recency = lambda_recency
+        self.effectiveness_recency = effectiveness_recency
 
-        # Step-specific failure costs (will be set by task definition)
-        # This is kept for backward compatibility but will be overridden
-        # by TaskDefinition.get_step_failure_cost()
-        self.step_failure_costs = step_failure_costs or {}
+        # Per-step failure costs (NEW primary mechanism)
+        if c_fail_per_step is not None:
+            self.c_fail_per_step = c_fail_per_step
+        elif c_fail_base is not None:
+            # Backward compatibility: uniform costs for all steps
+            print(f"WARNING: c_fail_base is deprecated. Using uniform cost {c_fail_base} for all steps.")
+            self.c_fail_per_step = np.full(8, c_fail_base)  # Default 8 steps
+        else:
+            # Default: uniform costs
+            self.c_fail_per_step = np.full(8, 20.0)
 
-    def apply_task_defaults(self, task_def: TaskDefinition):
-        """Apply task-specific default costs from TaskDefinition.
+        # Keep deprecated fields for backward compatibility
+        self.c_fail_base = c_fail_base  # DEPRECATED
+        self.step_failure_costs = step_failure_costs or {}  # DEPRECATED
 
-        Args:
-            task_def: TaskDefinition with base costs and step criticalities
-        """
-        self.c_fail_base = task_def.base_failure_cost
-        self.c_int = task_def.interruption_cost
+    # REMOVED: apply_task_defaults() - no longer needed with per-step costs
 
     def to_dict(self):
         """Convert parameters to dictionary for logging"""
@@ -148,11 +168,13 @@ class SimulationParams:
             'c_int': self.c_int,
             'c_nar': self.c_nar,
             'c_resp': self.c_resp,
-            'c_fail_base': self.c_fail_base,
+            'c_fail_per_step': self.c_fail_per_step.tolist() if isinstance(self.c_fail_per_step, np.ndarray) else self.c_fail_per_step,
             'beta': self.beta,
             'obs_noise': self.obs_noise,
             'step_mean_duration': self.step_mean_duration,
             'step_std_duration': self.step_std_duration,
+            'lambda_recency': self.lambda_recency,
+            'effectiveness_recency': self.effectiveness_recency,
         }
 
 
@@ -194,18 +216,27 @@ class ProcedureAssistantEnv:
         self._sample_step_durations()
 
     def _build_action_space(self) -> Dict[str, int]:
-        """Build assistant action space dynamically based on task size.
+        """Build assistant action space dynamically based on CRITICAL steps only.
+
+        Only steps with criticality > 0 get reminder actions.
+        This creates a sparse action space focusing on failure-prone steps.
 
         Returns:
             Dictionary mapping action names to action IDs.
-            Format: {'silent': 0, 'confirm': 1, 'remind_0': 2, ..., 'remind_N-1': N+1}
+            Format: {'silent': 0, 'confirm': 1, 'remind_3': 2, 'remind_4': 3}
+            (example for make_cereal with only steps 3-4 critical)
         """
         actions = {
             'silent': 0,
             'confirm': 1,
         }
-        for i in range(self.n_steps):
-            actions[f'remind_{i}'] = 2 + i
+
+        action_id = 2
+        for i, step in enumerate(self.task_def.steps):
+            if step.criticality > 0:  # Only critical steps get reminders
+                actions[f'remind_{i}'] = action_id
+                action_id += 1
+
         return actions
 
         # History tracking
@@ -268,9 +299,11 @@ class ProcedureAssistantEnv:
             }
             return obs
 
-        # Add observation noise (confuse current step)
+        # Add Gaussian observation noise centered on true step
         if np.random.random() < self.params.obs_noise:
-            observed_step = np.random.randint(self.n_steps)
+            # Gaussian noise with std=1.0, centered on true step
+            noise = np.random.normal(0, 1.0)
+            observed_step = int(np.clip(true_step + noise, 0, self.n_steps - 1))
         else:
             observed_step = true_step
 
@@ -286,12 +319,55 @@ class ProcedureAssistantEnv:
 
     def _compute_failure_probability(self, step_idx: int) -> float:
         """
-        Failure probability decreases with memory:
-        f_n(m) = f0_base * exp(-k * m)
+        Failure probability with base memory AND recency bonus.
+
+        f(m, r) = f0_base × exp(-k × m) × (1 - ε_recency × r)
+
+        where:
+        - m: base memory (long-term procedural knowledge, decays slowly)
+        - r: recency factor (short-term reminder freshness, decays fast)
+        - ε_recency: maximum additional prevention from recent reminder (default 0.95)
+
+        Examples:
+        - Just reminded (r=1.0, m=0.3): f = 0.6 × 0.55 × 0.05 = 0.016 (1.6% failure, 98% prevention)
+        - 10 ticks ago (r=0.5, m=0.2): f = 0.6 × 0.67 × 0.5 = 0.20 (20% failure, 80% prevention)
+        - No recent reminder (r=0, m=0): f = 0.6 × 1.0 × 1.0 = 0.60 (60% failure, baseline)
         """
+        # Non-critical steps (criticality=0) cannot fail - you can't fail at trivial actions
+        if step_idx < len(self.task_def.steps):
+            if self.task_def.steps[step_idx].criticality == 0:
+                return 0.0
+
+        # Base failure probability (exponential decay with long-term memory)
         memory = self.pa_state.memory[step_idx]
-        prob = self.params.f0_base * np.exp(-self.params.k_memory * memory)
-        return np.clip(prob, 0.0, 1.0)
+        base_failure_prob = self.params.f0_base * np.exp(-self.params.k_memory * memory)
+
+        # Recency bonus (strong for recent reminders, decays rapidly)
+        recency_factor = self._compute_recency_factor(step_idx)
+        recency_multiplier = 1.0 - self.params.effectiveness_recency * recency_factor
+
+        # Combined failure probability
+        final_prob = base_failure_prob * recency_multiplier
+        return np.clip(final_prob, 0.0, 1.0)
+
+    def _compute_recency_factor(self, step_idx: int) -> float:
+        """Compute recency factor: 1.0 if just reminded, decays exponentially.
+
+        Args:
+            step_idx: Index of the step
+
+        Returns:
+            Recency factor in [0, 1], where 1.0 = just reminded, 0.0 = no recent reminder
+        """
+        ticks_since_reminder = self.pa_state.global_tick - self.pa_state.last_reminded_tick[step_idx]
+
+        # If never reminded or very old, return 0
+        if ticks_since_reminder > 50:
+            return 0.0
+
+        # Exponential decay: r = exp(-λ × t)
+        recency = np.exp(-self.params.lambda_recency * ticks_since_reminder)
+        return np.clip(recency, 0.0, 1.0)
 
     def _check_step_completion(self) -> bool:
         """
@@ -315,20 +391,28 @@ class ProcedureAssistantEnv:
 
     def _update_memory(self, assistant_action: int):
         """
-        Update memory according to Eq. 3:
-        m_{n,t+1} = (1 - lambda) * m_{n,t} + Delta_A * I[a_t = remind_n]
+        Update memory and track reminder timing.
+
+        Base memory update: m_{n,t+1} = (1 - lambda) * m_{n,t} + Delta_A * I[a_t = remind_n]
+        Timing update: record global_tick when reminder given for recency calculation
         """
-        # Decay all memories
+        # Decay all base memories
         self.pa_state.memory *= (1 - self.params.lambda_forget)
 
-        # If assistant gave a reminder, boost that step's memory
+        # If assistant gave a reminder, boost memory AND record timing
         for step_idx in range(self.n_steps):
-            remind_action_id = self.assistant_actions[f'remind_{step_idx}']
-            if assistant_action == remind_action_id:
-                self.pa_state.memory[step_idx] += self.params.delta_reminder
+            remind_key = f'remind_{step_idx}'
+            if remind_key in self.assistant_actions:  # Only check if this step has a reminder action
+                remind_action_id = self.assistant_actions[remind_key]
+                if assistant_action == remind_action_id:
+                    self.pa_state.memory[step_idx] += self.params.delta_reminder
+                    self.pa_state.last_reminded_tick[step_idx] = self.pa_state.global_tick  # NEW
 
         # Clip memories to reasonable range
         self.pa_state.memory = np.clip(self.pa_state.memory, 0, 2.0)
+
+        # Increment global time counter
+        self.pa_state.global_tick += 1  # NEW
 
     def _sample_human_action(self, assistant_action: int, expected_value: float) -> int:
         """
@@ -395,7 +479,9 @@ class ProcedureAssistantEnv:
             failure_occurred = np.random.random() < fail_prob
 
             if failure_occurred:
-                fail_cost = self.task_def.get_step_failure_cost(self.pa_state.current_step)
+                # Use per-step failure cost from params
+                step_idx = self.pa_state.current_step
+                fail_cost = self.params.c_fail_per_step[step_idx]
                 reward -= fail_cost
                 self.pa_state.total_failures += 1
 
@@ -414,11 +500,28 @@ class ProcedureAssistantEnv:
             reward -= self.params.c_int
             self.pa_state.total_interactions += 1
 
+            # OFF-TIMING PENALTY: If this is a reminder for wrong step, add extra penalty
+            if assistant_action != self.assistant_actions['confirm']:
+                # This is a remind_N action - find which step N
+                reminded_step = None
+                for step_name, action_id in self.assistant_actions.items():
+                    if action_id == assistant_action and step_name.startswith('remind_'):
+                        reminded_step = int(step_name.split('_')[1])
+                        break
+
+                if reminded_step is not None:
+                    current_step = self.pa_state.current_step
+                    # Penalize if reminder doesn't match current or immediate next step
+                    if reminded_step not in [current_step, current_step + 1]:
+                        reward -= self.params.c_off_timing
+
         if human_action == HUMAN_ACTIONS['narrate']:
             reward -= self.params.c_nar
+            self.pa_state.total_narrations += 1  # Track narration count
 
         if human_action == HUMAN_ACTIONS['respond']:
             reward -= self.params.c_resp
+            self.pa_state.total_responses += 1  # Track response count
 
         # Record history
         self.history['states'].append(self.pa_state.copy())

@@ -111,26 +111,26 @@ def create_latte_making_task() -> TaskDefinition:
     - High base costs due to equipment and ingredient waste
     """
     steps = [
-        StepDefinition("gather_ingredients", "Gather milk, coffee beans, cup", criticality=1.0),
-        StepDefinition("grind_beans", "Grind coffee beans to espresso consistency", criticality=1.2),
-        StepDefinition("prepare_portafilter", "Fill and tamp portafilter", criticality=1.3),
-        StepDefinition("attach_portafilter", "Attach portafilter to espresso machine", criticality=1.4),
-        StepDefinition("place_cup", "Place cup under portafilter spout", criticality=1.1),
-        StepDefinition("brew_coffee", "Extract espresso shot (25-30 sec)", criticality=2.0),
-        StepDefinition("remove_portafilter", "Remove and knock out spent grounds", criticality=1.1),
-        StepDefinition("pour_milk", "Pour cold milk into pitcher", criticality=1.0),
-        StepDefinition("position_pitcher", "Position pitcher under steam wand", criticality=1.2),
-        StepDefinition("steam_milk", "Steam milk to 150-155°F", criticality=2.0),
-        StepDefinition("texture_milk", "Create microfoam texture", criticality=1.5),
-        StepDefinition("tap_pitcher", "Tap pitcher to remove large bubbles", criticality=1.0),
-        StepDefinition("swirl_milk", "Swirl milk to maintain texture", criticality=1.2),
-        StepDefinition("pour_milk_slowly", "Begin pouring milk slowly into center", criticality=1.4),
-        StepDefinition("create_pattern", "Pour latte art pattern", criticality=1.3),
-        StepDefinition("finish_pour", "Complete milk pour", criticality=1.2),
-        StepDefinition("wipe_cup", "Wipe any drips from cup exterior", criticality=1.0),
-        StepDefinition("clean_wand", "Purge and wipe steam wand", criticality=1.5),
-        StepDefinition("clean_portafilter", "Rinse portafilter basket", criticality=1.1),
-        StepDefinition("serve_latte", "Present finished latte", criticality=1.0),
+        StepDefinition("gather_ingredients", "Gather milk, coffee beans, cup", criticality=0.0),  # Trivial
+        StepDefinition("grind_beans", "Grind coffee beans to espresso consistency", criticality=0.0),  # Trivial
+        StepDefinition("prepare_portafilter", "Fill and tamp portafilter", criticality=0.0),  # Trivial
+        StepDefinition("attach_portafilter", "Attach portafilter to espresso machine", criticality=0.0),  # Trivial
+        StepDefinition("place_cup", "Place cup under portafilter spout", criticality=0.0),  # Trivial
+        StepDefinition("brew_coffee", "Extract espresso shot (25-30 sec)", criticality=1.0),  # CRITICAL - espresso extraction
+        StepDefinition("remove_portafilter", "Remove and knock out spent grounds", criticality=0.0),  # Trivial
+        StepDefinition("pour_milk", "Pour cold milk into pitcher", criticality=0.0),  # Trivial
+        StepDefinition("position_pitcher", "Position pitcher under steam wand", criticality=0.0),  # Trivial
+        StepDefinition("steam_milk", "Steam milk to 150-155°F", criticality=1.0),  # CRITICAL - steam pressure/thermal
+        StepDefinition("texture_milk", "Create microfoam texture", criticality=0.0),  # Trivial
+        StepDefinition("tap_pitcher", "Tap pitcher to remove large bubbles", criticality=0.0),  # Trivial
+        StepDefinition("swirl_milk", "Swirl milk to maintain texture", criticality=0.0),  # Trivial
+        StepDefinition("pour_milk_slowly", "Begin pouring milk slowly into center", criticality=0.0),  # Trivial
+        StepDefinition("create_pattern", "Pour latte art pattern", criticality=0.0),  # Trivial
+        StepDefinition("finish_pour", "Complete milk pour", criticality=0.0),  # Trivial
+        StepDefinition("wipe_cup", "Wipe any drips from cup exterior", criticality=0.0),  # Trivial
+        StepDefinition("clean_wand", "Purge and wipe steam wand", criticality=0.0),  # Trivial
+        StepDefinition("clean_portafilter", "Rinse portafilter basket", criticality=0.0),  # Trivial
+        StepDefinition("serve_latte", "Present finished latte", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -153,14 +153,14 @@ def create_make_cereal_task() -> TaskDefinition:
     - Steps 2-3 can swap order
     """
     steps = [
-        StepDefinition("get_bowl", "Retrieve bowl from cabinet", criticality=1.0),
-        StepDefinition("get_cereal", "Get cereal box from pantry", criticality=1.0),
-        StepDefinition("get_milk", "Get milk from refrigerator", criticality=1.0),
-        StepDefinition("pour_cereal", "Pour cereal into bowl", criticality=1.2),
-        StepDefinition("pour_milk", "Pour milk over cereal", criticality=1.3),
-        StepDefinition("get_spoon", "Get spoon from drawer", criticality=1.0),
-        StepDefinition("return_items", "Return cereal and milk to storage", criticality=1.0),
-        StepDefinition("serve_cereal", "Present cereal bowl", criticality=1.0),
+        StepDefinition("get_bowl", "Retrieve bowl from cabinet", criticality=0.0),  # Trivial
+        StepDefinition("get_cereal", "Get cereal box from pantry", criticality=0.0),  # Trivial
+        StepDefinition("get_milk", "Get milk from refrigerator", criticality=0.0),  # Trivial
+        StepDefinition("pour_cereal", "Pour cereal into bowl", criticality=1.0),  # CRITICAL
+        StepDefinition("pour_milk", "Pour milk over cereal", criticality=1.0),  # CRITICAL
+        StepDefinition("get_spoon", "Get spoon from drawer", criticality=0.0),  # Trivial
+        StepDefinition("return_items", "Return cereal and milk to storage", criticality=0.0),  # Trivial
+        StepDefinition("serve_cereal", "Present cereal bowl", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -182,14 +182,14 @@ def create_make_coffee_task() -> TaskDefinition:
     - Critical step: brew_coffee (machine operation)
     """
     steps = [
-        StepDefinition("get_mug", "Retrieve coffee mug", criticality=1.0),
-        StepDefinition("get_coffee_pod", "Get coffee pod", criticality=1.0),
-        StepDefinition("add_water", "Fill water reservoir", criticality=1.2),
-        StepDefinition("insert_pod", "Insert pod into machine", criticality=1.3),
-        StepDefinition("place_mug", "Place mug under dispenser", criticality=1.2),
-        StepDefinition("brew_coffee", "Start brew cycle", criticality=1.8),
-        StepDefinition("remove_pod", "Remove and discard used pod", criticality=1.1),
-        StepDefinition("serve_coffee", "Present finished coffee", criticality=1.0),
+        StepDefinition("get_mug", "Retrieve coffee mug", criticality=0.0),  # Trivial
+        StepDefinition("get_coffee_pod", "Get coffee pod", criticality=0.0),  # Trivial
+        StepDefinition("add_water", "Fill water reservoir", criticality=0.0),  # Trivial
+        StepDefinition("insert_pod", "Insert pod into machine", criticality=0.0),  # Trivial
+        StepDefinition("place_mug", "Place mug under dispenser", criticality=0.0),  # Trivial
+        StepDefinition("brew_coffee", "Start brew cycle", criticality=1.0),  # CRITICAL - machine operation/scalding
+        StepDefinition("remove_pod", "Remove and discard used pod", criticality=0.0),  # Trivial
+        StepDefinition("serve_coffee", "Present finished coffee", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -211,15 +211,15 @@ def create_make_sandwich_task() -> TaskDefinition:
     - Critical step: prepare_sandwich (assembly)
     """
     steps = [
-        StepDefinition("get_ingredients", "Gather bread, fillings, condiments", criticality=1.0),
-        StepDefinition("get_plate", "Get plate for sandwich", criticality=1.0),
-        StepDefinition("get_knife", "Get knife for spreading", criticality=1.0),
-        StepDefinition("arrange_workspace", "Arrange ingredients on counter", criticality=1.0),
-        StepDefinition("prepare_bread", "Lay out bread slices", criticality=1.1),
-        StepDefinition("spread_condiments", "Spread mayo/mustard on bread", criticality=1.2),
-        StepDefinition("add_fillings", "Add meat, cheese, vegetables", criticality=1.3),
-        StepDefinition("prepare_sandwich", "Assemble and cut sandwich", criticality=1.5),
-        StepDefinition("serve_sandwich", "Place sandwich on plate", criticality=1.0),
+        StepDefinition("get_ingredients", "Gather bread, fillings, condiments", criticality=0.0),  # Trivial
+        StepDefinition("get_plate", "Get plate for sandwich", criticality=0.0),  # Trivial
+        StepDefinition("get_knife", "Get knife for spreading", criticality=0.0),  # Trivial
+        StepDefinition("arrange_workspace", "Arrange ingredients on counter", criticality=0.0),  # Trivial
+        StepDefinition("prepare_bread", "Lay out bread slices", criticality=0.0),  # Trivial
+        StepDefinition("spread_condiments", "Spread mayo/mustard on bread", criticality=0.0),  # Trivial
+        StepDefinition("add_fillings", "Add meat, cheese, vegetables", criticality=0.0),  # Trivial
+        StepDefinition("prepare_sandwich", "Assemble and cut sandwich", criticality=1.0),  # CRITICAL - knife work/cutting
+        StepDefinition("serve_sandwich", "Place sandwich on plate", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -242,23 +242,23 @@ def create_make_stencil_task() -> TaskDefinition:
     - Highest base costs due to safety and equipment concerns
     """
     steps = [
-        StepDefinition("design_stencil", "Create or select stencil design", criticality=1.0),
-        StepDefinition("prepare_file", "Prepare vector file for laser", criticality=1.2),
-        StepDefinition("check_exhaust", "Verify exhaust system running", criticality=2.5),
-        StepDefinition("select_material", "Choose appropriate material (cardstock/mylar)", criticality=1.3),
-        StepDefinition("load_material", "Load material into laser bed", criticality=1.4),
-        StepDefinition("focus_laser", "Focus laser to material thickness", criticality=1.8),
-        StepDefinition("set_parameters", "Set power, speed, frequency", criticality=1.6),
-        StepDefinition("position_design", "Position design on material", criticality=1.2),
-        StepDefinition("start_cutting", "Start laser cutting process", criticality=2.0),
-        StepDefinition("monitor_cutting", "Monitor for flare-ups or issues", criticality=2.2),
-        StepDefinition("remove_cutout", "Remove finished stencil from bed", criticality=1.3),
-        StepDefinition("clean_edges", "Remove any burrs or rough edges", criticality=1.2),
-        StepDefinition("prepare_surface", "Clean surface to be painted", criticality=1.1),
-        StepDefinition("position_stencil", "Position stencil on surface", criticality=1.3),
-        StepDefinition("secure_stencil", "Tape or hold stencil firmly", criticality=1.4),
-        StepDefinition("apply_paint", "Apply paint through stencil", criticality=1.5),
-        StepDefinition("remove_stencil", "Carefully remove stencil", criticality=1.2),
+        StepDefinition("design_stencil", "Create or select stencil design", criticality=0.0),  # Trivial
+        StepDefinition("prepare_file", "Prepare vector file for laser", criticality=0.0),  # Trivial
+        StepDefinition("check_exhaust", "Verify exhaust system running", criticality=2.0),  # ULTRA-CRITICAL - fire/fume safety
+        StepDefinition("select_material", "Choose appropriate material (cardstock/mylar)", criticality=0.0),  # Trivial
+        StepDefinition("load_material", "Load material into laser bed", criticality=0.0),  # Trivial
+        StepDefinition("focus_laser", "Focus laser to material thickness", criticality=1.0),  # CRITICAL - laser alignment
+        StepDefinition("set_parameters", "Set power, speed, frequency", criticality=0.0),  # Trivial
+        StepDefinition("position_design", "Position design on material", criticality=0.0),  # Trivial
+        StepDefinition("start_cutting", "Start laser cutting process", criticality=1.0),  # CRITICAL - laser operation
+        StepDefinition("monitor_cutting", "Monitor for flare-ups or issues", criticality=1.0),  # CRITICAL - active monitoring
+        StepDefinition("remove_cutout", "Remove finished stencil from bed", criticality=0.0),  # Trivial
+        StepDefinition("clean_edges", "Remove any burrs or rough edges", criticality=0.0),  # Trivial
+        StepDefinition("prepare_surface", "Clean surface to be painted", criticality=0.0),  # Trivial
+        StepDefinition("position_stencil", "Position stencil on surface", criticality=0.0),  # Trivial
+        StepDefinition("secure_stencil", "Tape or hold stencil firmly", criticality=0.0),  # Trivial
+        StepDefinition("apply_paint", "Apply paint through stencil", criticality=0.0),  # Trivial
+        StepDefinition("remove_stencil", "Carefully remove stencil", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -280,15 +280,15 @@ def create_make_tea_task() -> TaskDefinition:
     - Critical step: pour_tea (scalding risk)
     """
     steps = [
-        StepDefinition("get_mug", "Retrieve tea mug", criticality=1.0),
-        StepDefinition("get_tea_bag", "Get tea bag or loose leaf", criticality=1.0),
-        StepDefinition("fill_kettle", "Fill kettle with water", criticality=1.1),
-        StepDefinition("heat_water", "Boil water in kettle", criticality=1.5),
-        StepDefinition("place_tea_bag", "Place tea bag in mug", criticality=1.0),
-        StepDefinition("pour_water", "Pour hot water over tea", criticality=1.8),
-        StepDefinition("steep_tea", "Let tea steep (3-5 minutes)", criticality=1.2),
-        StepDefinition("remove_tea_bag", "Remove and discard tea bag", criticality=1.1),
-        StepDefinition("serve_tea", "Present finished tea", criticality=1.0),
+        StepDefinition("get_mug", "Retrieve tea mug", criticality=0.0),  # Trivial
+        StepDefinition("get_tea_bag", "Get tea bag or loose leaf", criticality=0.0),  # Trivial
+        StepDefinition("fill_kettle", "Fill kettle with water", criticality=0.0),  # Trivial
+        StepDefinition("heat_water", "Boil water in kettle", criticality=1.0),  # CRITICAL - thermal hazard
+        StepDefinition("place_tea_bag", "Place tea bag in mug", criticality=0.0),  # Trivial
+        StepDefinition("pour_water", "Pour hot water over tea", criticality=1.0),  # CRITICAL - scalding risk
+        StepDefinition("steep_tea", "Let tea steep (3-5 minutes)", criticality=0.0),  # Trivial
+        StepDefinition("remove_tea_bag", "Remove and discard tea bag", criticality=0.0),  # Trivial
+        StepDefinition("serve_tea", "Present finished tea", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -310,20 +310,20 @@ def create_cooking_task() -> TaskDefinition:
     - Time-sensitive (overcooking/undercooking risks)
     """
     steps = [
-        StepDefinition("gather_ingredients", "Gather all cooking ingredients", criticality=1.0),
-        StepDefinition("get_cookware", "Get pots, pans, utensils", criticality=1.0),
-        StepDefinition("prep_ingredients", "Wash, chop, measure ingredients", criticality=1.1),
-        StepDefinition("preheat_pan", "Preheat pan on stove", criticality=1.5),
-        StepDefinition("add_oil", "Add cooking oil to pan", criticality=1.3),
-        StepDefinition("add_first_ingredients", "Add first ingredients to pan", criticality=1.4),
-        StepDefinition("saute_ingredients", "Sauté/cook first ingredients", criticality=1.8),
-        StepDefinition("add_seasonings", "Add spices and seasonings", criticality=1.2),
-        StepDefinition("add_remaining", "Add remaining ingredients", criticality=1.5),
-        StepDefinition("cook_thoroughly", "Cook until done (check temperature)", criticality=2.0),
-        StepDefinition("adjust_seasoning", "Taste and adjust seasoning", criticality=1.2),
-        StepDefinition("turn_off_stove", "Turn off burner", criticality=1.6),
-        StepDefinition("plate_food", "Transfer food to serving plate", criticality=1.3),
-        StepDefinition("serve_meal", "Present finished meal", criticality=1.0),
+        StepDefinition("gather_ingredients", "Gather all cooking ingredients", criticality=0.0),  # Trivial
+        StepDefinition("get_cookware", "Get pots, pans, utensils", criticality=0.0),  # Trivial
+        StepDefinition("prep_ingredients", "Wash, chop, measure ingredients", criticality=0.0),  # Trivial
+        StepDefinition("preheat_pan", "Preheat pan on stove", criticality=1.0),  # CRITICAL - heating/burn risk
+        StepDefinition("add_oil", "Add cooking oil to pan", criticality=0.0),  # Trivial
+        StepDefinition("add_first_ingredients", "Add first ingredients to pan", criticality=0.0),  # Trivial
+        StepDefinition("saute_ingredients", "Sauté/cook first ingredients", criticality=1.0),  # CRITICAL - active cooking/heat
+        StepDefinition("add_seasonings", "Add spices and seasonings", criticality=0.0),  # Trivial
+        StepDefinition("add_remaining", "Add remaining ingredients", criticality=0.0),  # Trivial
+        StepDefinition("cook_thoroughly", "Cook until done (check temperature)", criticality=1.0),  # CRITICAL - food safety
+        StepDefinition("adjust_seasoning", "Taste and adjust seasoning", criticality=0.0),  # Trivial
+        StepDefinition("turn_off_stove", "Turn off burner", criticality=1.0),  # CRITICAL - fire prevention
+        StepDefinition("plate_food", "Transfer food to serving plate", criticality=0.0),  # Trivial
+        StepDefinition("serve_meal", "Present finished meal", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -399,6 +399,34 @@ def print_task_summary():
     print(f"Step count range: {min(t.n_steps for t in tasks.values())} - "
           f"{max(t.n_steps for t in tasks.values())}")
     print("="*80 + "\n")
+
+
+def create_per_step_failure_costs(task_def: TaskDefinition,
+                                   base_cost: float = None) -> np.ndarray:
+    """Generate per-step failure cost array from task definition.
+
+    This helper function creates a cost array based on task step criticalities,
+    useful for the NEW cost structure in SimulationParams.
+
+    Args:
+        task_def: Task definition with steps and criticalities
+        base_cost: Base cost to multiply by criticality.
+                   If None, uses task's base_failure_cost
+
+    Returns:
+        Array of per-step failure costs (shape: [n_steps])
+
+    Example:
+        >>> task = get_task_definition("make_stencil")
+        >>> costs = create_per_step_failure_costs(task, base_cost=30)
+        >>> print(costs)
+        [30.  36.  75.  39. ...]  # 30 × criticality for each step
+    """
+    if base_cost is None:
+        base_cost = task_def.base_failure_cost
+
+    costs = np.array([base_cost * step.criticality for step in task_def.steps])
+    return costs
 
 
 if __name__ == "__main__":

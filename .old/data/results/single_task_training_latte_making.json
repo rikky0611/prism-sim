@@ -1,0 +1,51 @@
+{
+  "task": "latte_making",
+  "n_steps": 20,
+  "timesteps_per_model": 500000,
+  "total_models": 3,
+  "results": [
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "very_high_stakes",
+      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/latte_making/final_model",
+      "duration_sec": 921.2473886013031,
+      "timesteps": 500000,
+      "regime_config": {
+        "c_fail": 30.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Surgery/Critical - failures extremely costly (c_int=1 fixed)"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "balanced",
+      "model_path": "/home/ec2-user/prism-sim/models/balanced/latte_making/final_model",
+      "duration_sec": 920.8484897613525,
+      "timesteps": 500000,
+      "regime_config": {
+        "c_fail": 15.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
+      }
+    },
+    {
+      "success": true,
+      "task_name": "latte_making",
+      "regime_name": "moderate_low",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/latte_making/final_model",
+      "duration_sec": 919.9698469638824,
+      "timesteps": 500000,
+      "regime_config": {
+        "c_fail": 10.0,
+        "f0_base": 0.3,
+        "lambda_forget": 0.05,
+        "description": "Casual task - low stakes (c_int=1 fixed)"
+      }
+    }
+  ],
+  "total_duration_sec": 2762.0697391033173
+}
