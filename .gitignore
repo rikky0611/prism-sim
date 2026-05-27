@@ -20,6 +20,11 @@ data/logs/*.txt
 # Results (optional - may want to track some)
 results/videos/*.mp4
 
+# Bulky result/model artifacts (kept local, excluded from v1 commit)
+data/results/
+.old/models/
+.old/results/
+
 # System files
 .DS_Store
 .vscode/

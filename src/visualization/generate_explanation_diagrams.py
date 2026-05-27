@@ -76,7 +76,7 @@ def create_system_architecture_diagram():
                                facecolor='lightcoral', edgecolor='black', linewidth=3)
     ax.add_patch(reward_box)
     ax.text(0.5, 0.15, 'Reward Signal', ha='center', fontsize=14, weight='bold')
-    ax.text(0.5, 0.08, '−(failures×c_fail + interruptions×c_int)',
+    ax.text(0.5, 0.08, '−(failures×c_fail + interruptions×c_remind)',
            ha='center', fontsize=11)
 
     # Arrows - Action: Assistant → Human
@@ -319,7 +319,7 @@ def create_cost_strategy_diagram():
     ]
 
     table = ax1.table(cellText=regimes_data,
-                     colLabels=['Regime', 'c_fail', 'c_int', 'Ratio', 'Expected Behavior'],
+                     colLabels=['Regime', 'c_fail', 'c_remind', 'Ratio', 'Expected Behavior'],
                      cellLoc='center',
                      loc='center',
                      colWidths=[0.25, 0.12, 0.12, 0.12, 0.3])
@@ -343,14 +343,14 @@ def create_cost_strategy_diagram():
     ax1.set_title('Cost Regime Configuration', fontsize=16, weight='bold', pad=20)
 
     # Right: Strategy heatmap
-    # Decision boundary: intervene if p_fail > c_int / c_fail
+    # Decision boundary: intervene if p_fail > c_remind / c_fail
     fail_probs = np.linspace(0, 1, 100)
     cost_ratios = np.linspace(1, 50, 100)
 
     strategy_map = np.zeros((len(cost_ratios), len(fail_probs)))
     for i, ratio in enumerate(cost_ratios):
         for j, p_fail in enumerate(fail_probs):
-            threshold = 1.0 / ratio  # c_int / c_fail
+            threshold = 1.0 / ratio  # c_remind / c_fail
             if p_fail > threshold:
                 strategy_map[i, j] = 1  # Intervene (red)
             else:
@@ -381,7 +381,7 @@ def create_cost_strategy_diagram():
 
     # Set labels
     ax2.set_xlabel('Failure Probability', fontsize=14, weight='bold')
-    ax2.set_ylabel('Cost Ratio (c_fail / c_int)', fontsize=14, weight='bold')
+    ax2.set_ylabel('Cost Ratio (c_fail / c_remind)', fontsize=14, weight='bold')
     ax2.set_title('Optimal Decision Boundary', fontsize=16, weight='bold', pad=10)
 
     # Add axis labels

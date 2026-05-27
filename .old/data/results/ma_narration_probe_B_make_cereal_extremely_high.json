@@ -1,0 +1,205 @@
+{
+  "probe_id": "B",
+  "description": "Strong noise floor: obs_noise_min=0.001 (narration clears uncertainty)",
+  "task": "make_cereal",
+  "param_overrides": {
+    "obs_noise_min": 0.001
+  },
+  "regimes": {
+    "extremely_high": {
+      "task": "make_cereal",
+      "regime": "extremely_high",
+      "n_critical": 2,
+      "R_complete": 10.0,
+      "baselines": {
+        "both_silent": {
+          "mean_reward": -51.0,
+          "std_reward": 36.796738985948195,
+          "mean_failures": 1.22,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_ticks": 70.99
+        },
+        "always_narrate_silent_asst": {
+          "mean_reward": -84.7125,
+          "std_reward": 35.398073305619334,
+          "mean_failures": 1.16,
+          "mean_narrations": 73.425,
+          "mean_questions": 0.0,
+          "mean_ticks": 73.425
+        },
+        "both_random": {
+          "mean_reward": -153.99,
+          "std_reward": 44.32510462480602,
+          "mean_failures": 0.005,
+          "mean_narrations": 18.13,
+          "mean_questions": 36.85,
+          "mean_ticks": 72.865
+        }
+      },
+      "ma_ippo": {
+        "training_log": [
+          {
+            "round": 1,
+            "mean_reward": -49.27,
+            "std_reward": 25.023431019746273,
+            "mean_failures": 0.64,
+            "mean_narrations": 0.0,
+            "mean_questions": 54.54,
+            "mean_interactions": 0.0,
+            "mean_ticks": 68.0
+          },
+          {
+            "round": 2,
+            "mean_reward": -57.0,
+            "std_reward": 32.57299494980466,
+            "mean_failures": 1.34,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.0,
+            "mean_ticks": 71.02
+          },
+          {
+            "round": 3,
+            "mean_reward": -51.0,
+            "std_reward": 33.60059523282288,
+            "mean_failures": 1.22,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.0,
+            "mean_ticks": 72.04
+          },
+          {
+            "round": 4,
+            "mean_reward": -55.61,
+            "std_reward": 34.90605821343911,
+            "mean_failures": 1.12,
+            "mean_narrations": 13.46,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.72,
+            "mean_ticks": 68.88
+          },
+          {
+            "round": 5,
+            "mean_reward": -54.68,
+            "std_reward": 34.945923939710056,
+            "mean_failures": 1.22,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.92,
+            "mean_ticks": 76.06
+          },
+          {
+            "round": 6,
+            "mean_reward": -28.37,
+            "std_reward": 32.91987393657515,
+            "mean_failures": 0.74,
+            "mean_narrations": 0.12,
+            "mean_questions": 2.62,
+            "mean_interactions": 0.0,
+            "mean_ticks": 72.92
+          },
+          {
+            "round": 7,
+            "mean_reward": -53.0,
+            "std_reward": 37.16180835212409,
+            "mean_failures": 1.26,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.0,
+            "mean_ticks": 70.58
+          },
+          {
+            "round": 8,
+            "mean_reward": -25.64,
+            "std_reward": 29.080068775709588,
+            "mean_failures": 0.68,
+            "mean_narrations": 0.0,
+            "mean_questions": 3.28,
+            "mean_interactions": 0.0,
+            "mean_ticks": 74.24
+          },
+          {
+            "round": 9,
+            "mean_reward": -9.48,
+            "std_reward": 25.442869335041593,
+            "mean_failures": 0.3,
+            "mean_narrations": 0.0,
+            "mean_questions": 7.28,
+            "mean_interactions": 0.84,
+            "mean_ticks": 74.68
+          },
+          {
+            "round": 10,
+            "mean_reward": -6.39,
+            "std_reward": 21.263416940839964,
+            "mean_failures": 0.26,
+            "mean_narrations": 0.0,
+            "mean_questions": 6.78,
+            "mean_interactions": 0.0,
+            "mean_ticks": 67.98
+          },
+          {
+            "round": 11,
+            "mean_reward": -19.17,
+            "std_reward": 24.294569352017746,
+            "mean_failures": 0.4,
+            "mean_narrations": 0.0,
+            "mean_questions": 6.02,
+            "mean_interactions": 6.16,
+            "mean_ticks": 69.64
+          },
+          {
+            "round": 12,
+            "mean_reward": -15.49,
+            "std_reward": 26.41429347909953,
+            "mean_failures": 0.46,
+            "mean_narrations": 0.0,
+            "mean_questions": 4.98,
+            "mean_interactions": 0.0,
+            "mean_ticks": 72.96
+          },
+          {
+            "round": 13,
+            "mean_reward": -25.81,
+            "std_reward": 29.35164220277973,
+            "mean_failures": 0.56,
+            "mean_narrations": 0.0,
+            "mean_questions": 5.74,
+            "mean_interactions": 4.94,
+            "mean_ticks": 73.26
+          },
+          {
+            "round": 14,
+            "mean_reward": -28.65,
+            "std_reward": 24.565473738562424,
+            "mean_failures": 0.72,
+            "mean_narrations": 0.0,
+            "mean_questions": 5.02,
+            "mean_interactions": 0.14,
+            "mean_ticks": 73.82
+          },
+          {
+            "round": 15,
+            "mean_reward": -7.7,
+            "std_reward": 24.884131489766723,
+            "mean_failures": 0.3,
+            "mean_narrations": 0.0,
+            "mean_questions": 5.36,
+            "mean_interactions": 0.02,
+            "mean_ticks": 69.88
+          }
+        ],
+        "final_eval": {
+          "mean_reward": -7.495,
+          "std_reward": 22.650220197605144,
+          "mean_failures": 0.295,
+          "mean_narrations": 0.0,
+          "mean_questions": 5.47,
+          "mean_interactions": 0.01,
+          "mean_ticks": 71.245
+        }
+      }
+    }
+  }
+}

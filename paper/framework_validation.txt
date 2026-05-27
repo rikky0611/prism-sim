@@ -1,0 +1,353 @@
+\section{Framework Validation}
+\label{sec:validation}
+
+We validate the framework along the natural argumentative arc.
+First, we show that the proposed cooperative-POMDP formulation \emph{is simply better} than the fixed-policy alternatives a deployed procedure assistant could plausibly use, measured by joint reward across a 7-task benchmark.
+Second, we open the box: we show that the learned joint policy is not a single fixed strategy but a regime-conditional family, with sharp phase transitions along each of the three design axes introduced in Section~\ref{sec:framework} --- the communication regime, memory dynamics, and observation noise --- and we inspect single-episode rollouts that make the emergent strategies legible.
+Third, we verify that the same phase structure replicates across procedural tasks of varying length and criticality density.
+
+\subsection{Setup}
+\label{sec:val-setup}
+
+Unless stated otherwise, all experiments train Multi-Agent Independent PPO (MA-IPPO) on the \texttt{make\_cereal} task (8 procedural steps, of which 2 are critical) using alternating best-response with 4 rounds of \(10^{4}\) environment steps per agent per round and 30 evaluation episodes per cell.
+The default decay regime is \texttt{step\_transition} (\(\lambda_{\mathrm{forget}}{=}0.03\), \(m_{\mathrm{init}}{=}0.3\)) and the default sensing regime is \texttt{durable} (\(n_{\mathrm{base}}{=}0.5\), \(n_{\min}{=}0.05\), \(\lambda_n{=}0.02\)).
+
+\paragraph{Baselines.}
+We compare the learned joint policy (\textbf{Proposed}, MA-IPPO) against three fixed-policy baselines.
+\textbf{None} is the zero-communication floor: both agents stay silent for the full episode, so failure risk is determined entirely by the un-aided memory trajectory.
+\textbf{Passive Assistant} is the human-led-only baseline: the human narrates every tick (an upper bound on human-side communicative effort that maximally aids the assistant's tracker), and the assistant never intervenes.
+\textbf{Heuristic} is the assistant-led, rule-based baseline used by deployed procedure assistants such as PrISM-Observer~\cite{DBLP:journals/corr/PrISM-Observer}: the human stays silent, and the assistant monitors the shared \(\mathrm{step\_belief}\) over the human's procedural state; for each critical step in order, the first time that step's belief mass exceeds \(0.3\) the assistant fires a single \texttt{remind} action, and otherwise stays silent.
+Per-episode state ensures that the assistant never sends a second reminder for a step it has already reminded.
+None of the three baselines conditions on the cost regime --- that is precisely the burden the framework is intended to lift.
+
+\paragraph{Metrics.}
+We report per-episode counts of each communicative action (\texttt{narrate}, \texttt{question}, \texttt{remind}, \texttt{confirm}); the failure count \(N_f\), defined as the number of step completions in which a failure event was sampled (failures do not terminate the episode but penalize the joint reward by \(c_{\mathrm{fail}}(s)\)); and the joint return.
+We also derive a \emph{division-of-labor index} \(\mathrm{DoL} = (N_{\mathrm{nar}} + N_{q}) / (N_{\mathrm{nar}} + N_{q} + N_{\mathrm{rem}} + N_{\mathrm{con}})\) that captures the share of communication originating from the human; \(\mathrm{DoL} = 1\) is fully human-led, \(\mathrm{DoL} = 0\) is fully assistant-led.
+For each phase-diagram axis we additionally report two effect-size measures: the maximum cell-to-cell change in DoL or in the dominant action count along the axis (\(\Delta_{\mathrm{cell}}\)) and the width, in grid cells, of the transition zone in which DoL crosses the band \([0.3, 0.7]\); a sharp transition has \(\Delta_{\mathrm{cell}}\) comparable to the full range and width \(\le 2\) cells.
+
+\paragraph{External validity anchor.}
+The cost parameters in the simulator are not arbitrary.
+The narration/question costs we sweep, \(c_{\mathrm{nar}}, c_{q} \in [0.5, 5]\), are calibrated so that one narration corresponds to roughly \(0.5\)--\(5\)~s of speaking time during a procedure, comparable to the disturbance scores reported for auditory reminders in mobile and ambient prompting studies \cite{ho2005interruptions, iqbal2008notifications}; the failure cost \(c_{\mathrm{fail\_scale}} = 15\) sits between the ``balanced'' and ``high-stakes'' presets used in the procedural-assistant literature \cite{arakawa2024prism}.
+The phase boundaries we report below should therefore be read as qualitative claims about the operating regimes that real procedure assistants encounter, not as numerical predictions for any specific deployment.
+
+\subsection{Reward Comparison Across Tasks}
+\label{sec:val-reward}
+
+\textbf{Question.}
+Across tasks of varying length, criticality structure, and ordering complexity, does the proposed framework outperform every fixed-policy baseline a deployed procedure assistant could plausibly use, and does it select operating points on the (interaction count, failure count) plane that no fixed baseline can reach?
+
+\textbf{Setup.}
+Using the 7-task comparison sweep (\(7 \times 3 \times 5 \times 4 \times 500 \approx 2.1\!\times\!10^{5}\) evaluation episodes across the four policies), we plot for each task the (interactions/episode, failures/episode) cloud across all (obs noise \(\times\) failure regime) cells, and we report the mean reward gain of \textbf{Passive Assistant}, \textbf{Heuristic}, and \textbf{Proposed} (MA-IPPO) relative to the \textbf{None} reference, averaged over all regimes per task.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/pareto_per_task.png}\\
+  \vspace{0.6em}
+  \includegraphics[width=0.85\linewidth]{figures/paper/pareto_improvement_bars.png}
+  \caption{Cross-task baseline comparison. Top: per-task scatter
+    on the (interactions/episode, failures/episode) plane across all
+    (obs\,noise\,$\times$\,fail\,regime) cells. None (gray) sits at
+    \((0, \mathrm{many})\), Passive Assistant (orange) at
+    \((\mathrm{many\,narrations}, \mathrm{intermediate})\),
+    Heuristic (red) at \((\mathrm{few\,reminds}, \mathrm{few})\), and
+    MA-IPPO (blue) selects intermediate operating points unreachable
+    by any fixed policy. Bottom: mean reward improvement over the
+    None reference averaged over all regimes, per task. The Proposed
+    policy matches or exceeds both fixed baselines on every task and
+    pulls further ahead on the longer, multi-critical tasks
+    (\texttt{cooking}, \texttt{make\_stencil},
+    \texttt{latte\_making}).}
+  \label{fig:reward}
+\end{figure*}
+
+\textbf{Findings.}
+On every task the Proposed policy delivers a larger reward gain over None than any fixed baseline does, and the gap widens on tasks with more critical steps and longer rollouts.
+Strict Pareto dominance over any single baseline on the (interactions, failures) plane is structurally rare: the three fixed baselines occupy disjoint regions of the plane --- None at zero communication and high failure rate, Passive Assistant at high narration count and intermediate failure rate, Heuristic at small reminder count and low failure rate --- and no single policy can simultaneously dominate all three.
+What the scatter does show is that MA-IPPO consistently selects an \emph{intermediate} operating point unreachable by any fixed policy: at low failure cost it stays near the None cluster (low interactions, low penalty), and at high failure cost it matches the Heuristic's failure rate with substantially fewer interactions, a region populated only by MA-IPPO points.
+This is the appropriate version of the improvement claim for a framework whose contribution is regime-conditional point selection rather than uniform improvement on every axis.
+The remaining subsections open the box and characterize the policy structure that produces this advantage.
+
+\subsection{Per-Axis: Communication Regime}
+\label{sec:val-asymmetric}
+
+\textbf{Question.}
+If the cost of communicating shifts asymmetrically between the human and the assistant, does the framework rediscover the right \emph{division of labor} without retuning?
+
+\textbf{Setup.}
+We sweep \((c_{\mathrm{nar}}, c_{\mathrm{remind}})\) over an \(8 \times 8\) log-spaced grid in \([0.5, 5.0]\), with \(c_{q} = c_{\mathrm{nar}}\) and \(c_{\mathrm{confirm}} = c_{\mathrm{remind}}\) so that each axis is one agent's communication price.
+The range matches the external validity anchor: the lower bound corresponds to a roughly \(0.5\)~s utterance, the realistic floor for a single narration during procedural work.
+We fix \(c_{\mathrm{fail\_scale}} = 15\) and \(c_{\mathrm{off}} = 3.0\) and train MA-IPPO independently in each cell.
+Figure~\ref{fig:phase-asymmetric} reports the resulting categorical phase diagram, the division-of-labor index, the per-action heatmaps, and an antidiagonal slice through the grid.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/phase_asymmetric_make_cereal_seed0.png}
+  \caption{Cost-asymmetry phase diagram on \texttt{make\_cereal}.
+    A \(6 \times 6\) grid sweeps the human's communication price
+    \(c_{\mathrm{nar}}\) and the assistant's price
+    \(c_{\mathrm{remind}}\) over \([0.05, 5.0]\) (log-spaced), holding
+    \(c_{\mathrm{fail\_scale}} = 15\). Row 1: categorical phase, the
+    division-of-labor index, mean reward, and failures. Row 2:
+    per-action heatmaps (narrations, questions, reminds, confirms).
+    Bottom: antidiagonal slice showing the sharp role swap as the
+    cost shifts from one agent to the other.}
+  \label{fig:phase-asymmetric}
+\end{figure*}
+
+\textbf{Findings.}
+Three observations stand out.
+First, the categorical phase diagram cleanly separates four regimes (Silent \(81\%\), Human-led \(8\%\), Assistant-led \(8\%\), Mixed \(3\%\) of the 64 cells, threshold 1 action/episode) at the seed reported here, with sharp boundaries between phases.
+Silence dominates the realistic cost range: with the Bahrick-permastore floor in place (Section~\ref{sec:framework-state}), the unaided failure probability is capped at \(f(m_{\infty}{=}0.3) \approx 0.30\), so the expected failure cost offsets a single utterance only when the responsible agent's communication is the cheaper option.
+The active phases nonetheless balance: the 5 Human-led, 5 Assistant-led, and 2 Mixed cells cluster along the cheap-agent boundaries, demonstrating the role swap survives the calibrated cost regime.
+The policy correctly tolerates a small failure rate rather than spending more than it saves.
+A multi-seed aggregate (Figure~\ref{fig:phase-asymmetric-seeds}) shows per-cell DoL agreement is high in the active (non-Silent) zone --- the mean inter-seed IQR of the division-of-labor index is below 0.1 on a \([0,1]\) scale --- so the qualitative phase pattern is not a single-seed artifact.
+Second, the division-of-labor index sweeps from \(\mathrm{DoL} = 1.00\) on the cheap-human / expensive-assistant boundary --- where the human issues questions while the assistant is silent --- to \(\mathrm{DoL} = 0.00\) at \((c_{\mathrm{nar}}{=}5.0,\, c_{\mathrm{remind}}{=}0.5)\) --- where the assistant fires a small number of confirms/reminders per episode while the human stays silent.
+Averaged over the active (non-Silent) cells in each quadrant, the cheap-human / expensive-assistant quadrant gives mean \(\mathrm{DoL} \approx 1.00\) and the expensive-human / cheap-assistant quadrant gives mean \(\mathrm{DoL} \approx 0.00\); the cheap-both quadrant takes intermediate values and the expensive-both quadrant is fully Silent.
+The floor + logistic-failure model preserves the role-swap topology even as the Silent zone expands.
+Third, the antidiagonal slice (Figure~\ref{fig:phase-asymmetric}, bottom panel) shows that the role swap is sharp: at the cheap-human end the human carries communication, at the cheap-assistant end the assistant carries it, and the middle of the slice is Silent.
+The transition zone is at most one grid cell wide along this slice; the active phases abut Silent rather than blending into a Mixed band.
+The phase-distribution percentages reported above use a categorical threshold of \(1\) action per episode; varying the threshold by \(\pm 20\%\) preserves the structure (Appendix Table A1).
+
+Communication-count summary across the grid: per-cell totals span \([0, 38]\) actions per episode with a 95th percentile of \(\sim\!15\)/episode and a mean of \(\sim\!2\)/episode across all 64 cells.
+Among the 12 cells where the policy actively communicates, the median is \(\sim\!4\) actions per episode --- well within the upper bound of \(\sim\!10\) actions per episode one would expect of a well-tuned procedural assistant in a calibrated cost regime.
+The mid-subtask interruption penalty (Section~\ref{sec:framework-state}) explains the Silent dominance compared to a no-floor / exponential-failure baseline: a communication delivered deep in a subtask pays an extra \(c_{\mathrm{mid}}\), which raises the threshold cost a single intervention must clear, and combined with the permastore floor's reduction in expected failure cost, expands the regime where staying silent is optimal.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/phase_asymmetric_make_cereal_seeds_aggregated.png}
+  \caption{Seed-aggregated cost-asymmetry phase diagram across
+    3 seeds. Top row: median categorical phase, median
+    division-of-labor index, and per-cell DoL inter-quartile range
+    (IQR) across seeds --- small IQR (\(< 0.1\)) over most cells shows
+    the phase pattern is reproducible. Bottom row: median reward,
+    median failures, and reward IQR across seeds.}
+  \label{fig:phase-asymmetric-seeds}
+\end{figure*}
+
+\textbf{Per-cell improvement over fixed baselines.}
+Figure~\ref{fig:phase-asymmetric-baselines} re-evaluates the same 64 cells under None, Heuristic, and MA-IPPO and overlays the resulting reward, total-interaction, and failure heatmaps.
+The fixed baselines are nearly insensitive to \((c_{\mathrm{nar}}, c_{\mathrm{remind}})\): None has zero communication everywhere by construction, and Heuristic's interaction count varies only with the realised failure rate (range \(\le 1.5\) interactions/ep across the grid), since neither baseline conditions on cost.
+MA-IPPO's interaction-count heatmap, in contrast, spans a range of \(\sim\!60\) interactions/ep over the same cells, from zero in the Silent zone up to a peak at the cheap-human boundary, while the bulk of the grid lies in a sub-15-interaction band.
+The framework's contribution is precisely this regime-conditional selection of \emph{whether} to communicate at all and \emph{which channel} to use.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/phase_asymmetric_baselines_make_cereal_seed0.png}
+  \caption{Baseline overlay on the cost-asymmetry grid. The same 36
+    \((c_{\mathrm{nar}}, c_{\mathrm{remind}})\) cells re-evaluated
+    under three policies: None, Heuristic, and MA-IPPO. Rows
+    show mean reward, total interactions per episode, and failures.
+    Each cell's \texttt{range} label reports max\,$-$\,min across
+    the grid: None and Heuristic are nearly flat in interactions
+    and failures (range \(\le 1.5\)/ep), while MA-IPPO's heatmap
+    spans a range of \(\sim 60\) interactions/ep, reflecting
+    regime-conditional adaptation.}
+  \label{fig:phase-asymmetric-baselines}
+\end{figure*}
+
+\subsection{Per-Axis: Memory Dynamics}
+\label{sec:val-memory}
+
+\textbf{Question.}
+If the human's memory of upcoming critical steps decays faster, or starts at a lower level, does the framework re-allocate communicative effort towards earlier and more frequent intervention --- and does it do so via the appropriate channel, given the rest of the cost regime?
+
+\textbf{Setup (planned).}
+We sweep \((m_{\mathrm{init}}, \lambda_{\mathrm{forget}})\) on a 2D grid: \(m_{\mathrm{init}} \in \{0.1, 0.3, 0.5, 0.7\}\) and \(\lambda_{\mathrm{forget}} \in \{0.01, 0.03, 0.05, 0.10\}\) (smaller \(\lambda\) = more durable memory across step transitions).
+All other axes are held at defaults (\texttt{cheap\_narrate} cost regime, \texttt{durable} sensing).
+For each cell we train MA-IPPO independently and report the per-action heatmaps, mean reward, and failure count; a role-swap slice at fixed \(m_{\mathrm{init}}\) tests whether the policy's preferred channel for memory support is reminder (assistant-targeted) or narration / question (human-self-disclosed).
+
+\textit{This subsection is the empirical anchor for the framework's memory-dynamics axis; the sweep itself is forthcoming and the figure (\texttt{memory\_grid\_make\_cereal\_seed0.png}) will be reported in the next revision.}
+
+\subsection{Per-Axis: Sensing Fidelity}
+\label{sec:val-sensing}
+
+\textbf{Question.}
+Does the joint policy adapt its communicative behavior to the assistant's sensing conditions, even when communication and failure costs are held fixed?
+
+\textbf{Setup.}
+We sweep \((n_{\mathrm{base}}, \lambda_n)\) on a \(4 \times 4\) grid: \(n_{\mathrm{base}} \in \{0.2, 0.4, 0.6, 0.8\}\) and \(\lambda_n \in \{0.02, 0.043, 0.093, 0.20\}\) (small \(\lambda_n\) = durable narration, half-life \(\sim\!35\) ticks; large \(\lambda_n\) = brittle, half-life \(\sim\!3.5\) ticks).
+Communication costs, failure cost, and decay are fixed (\(c_{\mathrm{nar}} = c_{q} = 0.5\), \(c_{\mathrm{remind}} = c_{\mathrm{confirm}} = 1.0\), \(c_{\mathrm{off}} = 3.0\), \(c_{\mathrm{fail\_scale}} = 15\)).
+Figure~\ref{fig:sensing-sweep} shows the per-action heatmaps, the tracking-MAP-accuracy heatmap, and a role-swap slice at fixed \(n_{\mathrm{base}}\).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/sensing_sweep_make_cereal_seed0.png}
+  \caption{Sensing-fidelity sweep on \texttt{make\_cereal}:
+    a \(4 \times 4\) grid over baseline observation noise
+    \(n_{\mathrm{base}}\) and recovery rate \(\lambda_n\). Top:
+    per-action heatmaps (narrations, questions, reminds, confirms).
+    Bottom: mean reward, failures, tracking-MAP accuracy, and a
+    role-swap slice at fixed \(n_{\mathrm{base}}\). Tracking
+    accuracy degrades smoothly from \(\sim 0.83\) at
+    \(n_{\mathrm{base}} = 0.2\) to \(\sim 0.49\) at \(0.8\);
+    confirmations activate in the hardest cell.}
+  \label{fig:sensing-sweep}
+\end{figure*}
+
+\textbf{Findings.}
+Two effects emerge.
+First, \emph{tracking accuracy degrades smoothly with baseline noise}, from \(\sim\)0.83 at \(n_{\mathrm{base}}{=}0.2\) to \(\sim\)0.49 at \(n_{\mathrm{base}}{=}0.8\), confirming that the assistant's belief is genuinely sensitive to its sensing channel.
+Second, the policy reallocates communicative effort to compensate.
+Narrations fire most heavily in the regime where they are useful \emph{and} affordable to leave standing (\(n_{\mathrm{base}} \approx 0.6\), \(\lambda_n \approx 0.09\)), and confirmations come online in the hardest cell (\(n_{\mathrm{base}}{=}0.8\), \(\lambda_n{=}0.20\)), where narration cannot maintain tracking on its own.
+Reminders are essentially absent across this sweep --- at \(c_{\mathrm{remind}} = 1.0\) and \(c_{\mathrm{off}} = 3.0\) they are strictly dominated by the cheaper alternatives in the chosen failure regime.
+This is consistent with the framework's prediction that the \emph{relative} fidelity of narration controls when human-initiated state disclosure is worth its attention cost; the policy lets sensing quality, not a hand-coded rule, decide.
+
+The variability of action counts across nearby cells is larger than in the cost-asymmetry sweep (Section~\ref{sec:val-asymmetric}), reflecting the fact that this axis manipulates the dynamics of belief rather than the reward directly: small differences in noise dynamics permit multiple near-optimal local policies, and PPO's alternating best-response converges to different ones in different cells.
+The cross-cutting trend on tracking accuracy and the appearance of confirmation actions in the hardest regime are nonetheless consistent with the axis-3 prediction.
+
+\textbf{Reminder-activation follow-up.}
+To test whether reminders' near-absence in the main sensing sweep reflects a structural property or merely the choice of \(c_{\mathrm{remind}}\), we ran a supplementary \(4 \times 4\) grid over \((\lambda_n, c_{\mathrm{remind}})\) at fixed \(n_{\mathrm{base}} = 0.4\) and \(c_{\mathrm{nar}} = 0.5\), with \(c_{\mathrm{remind}} \in \{0.05, 0.14, 0.37, 1.00\}\), across 3 seeds (Figure~\ref{fig:sensing-remind} shows seed 0; Figure~\ref{fig:sensing-remind-seeds} shows the median + IQR aggregate).
+Two findings.
+First, even at the cheapest \(c_{\mathrm{remind}} = 0.05\), reminders remain essentially absent (\(<0.2\) per episode at the median across seeds): in this regime the policy prefers \emph{confirmations}, which reduce observation noise broadly rather than targeting a specific critical step.
+Second, confirmation count scales smoothly and monotonically with \(c_{\mathrm{remind}}\): at the brittlest \(\lambda_n = 0.20\), median confirms fall from \(39\)/episode at \(c_{\mathrm{remind}} = 0.05\) to \(0\)/episode at \(c_{\mathrm{remind}} = 1.0\) (3 seeds), and the median failure rate moves with it (\(0.63\) versus \(1.17\) failures/episode).
+We read this as a refinement of the axis-3 claim: the policy's \emph{compensatory channel} when narration becomes unreliable is broad-coverage confirmation rather than step-targeted reminder, and its \emph{intensity} is graded by the assistant's communication cost.
+Reminders appear only when the assistant's belief over the current step concentrates strongly on a critical step (the trajectory anatomy in Section~\ref{sec:val-trajectories} shows one such episode).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/sensing_remind_sweep_make_cereal_seeds_aggregated.png}
+  \caption{Reminder-activation probe: a \(4 \times 4\) grid
+    over \((\lambda_n, c_{\mathrm{remind}})\) at fixed
+    \(n_{\mathrm{base}} = 0.4\), aggregated over 3 seeds (median +
+    IQR). Even at the cheapest \(c_{\mathrm{remind}} = 0.05\),
+    reminders remain near zero; the compensatory channel under
+    brittle narration is \emph{confirmations}, which scale
+    monotonically with \(c_{\mathrm{remind}}\) (39\,/episode at the
+    brittle/cheap corner versus 0\,/episode at the brittle/expensive
+    corner, median failure rate 0.63 vs 1.17). The single-seed
+    counterpart is in
+    Figure~\ref{fig:sensing-remind}.}
+  \label{fig:sensing-remind-seeds}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/sensing_remind_sweep_make_cereal_seed0.png}
+  \caption{Single-seed view of the sensing\,$\times$\,reminder-cost
+    grid (seed 0), shown for reference next to the seed-aggregated
+    Figure~\ref{fig:sensing-remind-seeds}.}
+  \label{fig:sensing-remind}
+\end{figure*}
+
+\subsection{Qualitative Anatomy of Learned Policies}
+\label{sec:val-trajectories}
+
+To complement the aggregate statistics from the three per-axis sweeps, Figure~\ref{fig:trajectories} shows tick-aligned single-episode rollouts from four representative cells of the cost-asymmetry grid.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/trajectory_anatomy_make_cereal_seed0.png}
+  \caption{Trajectory anatomy: deterministic single-episode
+    rollouts from four representative cells of the cost-asymmetry
+    grid, one per phase category (Silent, Human-led,
+    Assistant-led, Mixed). Each panel shows the true step (black),
+    memory at the first critical step (purple), observation noise
+    (orange dashed), human action events (lower row), and assistant
+    action events (lowest row). The traces make emergent strategies
+    inspectable and are consistent with a simple expected-utility
+    argument over per-action cost and the failure-probability
+    function \(f(m) = f_0 \exp(-k m)\).}
+  \label{fig:trajectories}
+\end{figure*}
+
+The traces make the emergent strategies inspectable, and in each phase the policy is consistent with a simple expected-utility argument over the per-action cost and the failure-probability function \(f(m) = f_0 \exp(-k m)\).
+
+In the \emph{Silent} phase (\(c_{\mathrm{nar}} = c_{\mathrm{remind}} = 5\)), every communicative action costs more than the expected failure penalty \(f(m_{\mathrm{init}}) \cdot c_{\mathrm{fail}}\) it could avert, so neither agent acts; the trace shows occasional failures (red markers) that the policy correctly tolerates.
+
+In the \emph{Human-led} phase (\(c_{\mathrm{nar}} = 0.13,\,c_{\mathrm{remind}} = 5\)), narration is the cheapest way to suppress observation noise on the assistant's side; the human fires \texttt{question} densely in the first ticks of each step, where memory has just decayed and the marginal benefit of a refresh is highest, then falls silent until the next step transition.
+Critical-step memory stays near its ceiling and the assistant has no work to do.
+
+In the \emph{Assistant-led} phase (\(c_{\mathrm{nar}} = 1.99,\,c_{\mathrm{remind}} = 0.13\)), narration is \(15\times\) more expensive than confirmation, so the assistant takes the load: \texttt{confirm} actions cluster in the few ticks immediately preceding each critical step, the window in which \(f(m)\) is steepest as a function of recent decay.
+A small number of \texttt{remind}s appear earlier in the episode when the assistant's belief over the current step concentrates on a critical step.
+
+In the \emph{Mixed} phase (\(c_{\mathrm{nar}} = 0.13,\,c_{\mathrm{remind}} = 0.05\)), both channels are cheap, and the policy uses them on different signals: the human's questions track \emph{when} memory has just decayed, the assistant's confirmations track \emph{which} step is about to become critical, and the two streams interleave with little overlap.
+This phase achieves the lowest failure count in the figure, at the expense of the highest total interaction count.
+
+These rollouts confirm that the phase-diagram categories are not artifacts of aggregation; they correspond to qualitatively distinct policies whose timing is consistent with the cost-weighted failure-probability surface that the framework induces.
+
+\subsection{Multi-Task Verification: Phase Categories Replicate Across Tasks}
+\label{sec:val-multitask}
+
+\textbf{Question.}
+Do the phase categories established on \texttt{make\_cereal} replicate across procedural tasks of varying length and criticality density, or are they idiosyncratic to one task?
+We answer in two steps: first we widen the cost grid on \texttt{make\_cereal} itself (a \(15 \times 15\) sweep over \((c_{\mathrm{comm}}, c_{\mathrm{fail\_scale}})\)) to check that the phase boundaries remain sharp under denser sampling, then we replicate the sweep at \(8 \times 8\) resolution on three additional tasks.
+
+\textbf{Single-task robustness on \texttt{make\_cereal}.}
+We reuse the existing \(15 \times 15\) grid that sweeps \((c_{\mathrm{comm}}, c_{\mathrm{fail\_scale}})\) on \texttt{make\_cereal} (with \(c_{\mathrm{nar}} = c_{q} = c_{\mathrm{comm}}\) and \(c_{\mathrm{remind}} = c_{\mathrm{confirm}} = 1\)).
+Figure~\ref{fig:phase-cfail} shows the categorical phase diagram and selected heatmaps; Figure~\ref{fig:frontier-slices} shows horizontal slices at four representative failure costs.
+As \(c_{\mathrm{fail\_scale}}\) rises, the optimal policy moves through \emph{Silent} \(\rightarrow\) one-channel communication (Question-only or Remind-only) \(\rightarrow\) multi-channel cooperation; along a vertical slice through \(c_{\mathrm{comm}} = 0.4\), narration count jumps from below 1 to above 5 within two grid cells.
+The frontier slices show that which mode dominates depends on the relative cost: at low \(c_{\mathrm{comm}}\) the cheaper human channels (narrations and questions) absorb most of the load, but as \(c_{\mathrm{comm}}\) rises above the fixed assistant cost \(c_{\mathrm{remind}} = 1\) the curves cross and reminders take over.
+Failure cost sets the \emph{total} communication budget, the communication regime sets which \emph{channel} spends it.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/phase_diagram_make_cereal_e2.png}
+  \caption{Expected-failure-cost phase diagram on
+    \texttt{make\_cereal}: a \(15 \times 15\) sweep over
+    \((c_{\mathrm{comm}}, c_{\mathrm{fail\_scale}})\) with
+    \(c_{\mathrm{remind}} = c_{\mathrm{confirm}} = 1\). As
+    \(c_{\mathrm{fail\_scale}}\) rises (vertical axis), the optimal
+    policy moves through Silent \(\to\) one-channel communication
+    \(\to\) multi-channel cooperation. Phase boundaries are sharp.}
+  \label{fig:phase-cfail}
+\end{figure*}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/frontier_slices_make_cereal.png}
+  \caption{Frontier slices through the grid at four fixed
+    \(c_{\mathrm{fail\_scale}}\) levels. At low \(c_{\mathrm{comm}}\)
+    the cheaper human channels (narrations, questions) absorb most
+    of the load; as \(c_{\mathrm{comm}}\) rises above
+    \(c_{\mathrm{remind}} = 1\) the curves cross and reminders take
+    over. Total communication budget tracks failure cost.}
+  \label{fig:frontier-slices}
+\end{figure}
+
+\textbf{Cross-task replication of the cost-asymmetry phases.}
+To check that the cost-asymmetry phase structure of Section~\ref{sec:val-asymmetric} is not specific to \texttt{make\_cereal}, we ran the identical \(8 \times 8\) \((c_{\mathrm{nar}}, c_{\mathrm{remind}})\) sweep in \([0.5, 5.0]\) on all seven benchmark tasks, holding all other parameters at their defaults.
+Figure~\ref{fig:multitask-phase} shows the seven categorical phase diagrams side by side, ordered by increasing criticality pressure.
+The four-class structure (Silent / Human-led / Assistant-led / Mixed) is preserved on every task, but the \emph{location and area} of the phases shift systematically with task structure.
+Two regularities stand out.
+First, \emph{criticality density controls the Silent fraction}: the single-critical-step tasks \texttt{make\_coffee} and \texttt{make\_sandwich} are Silent in \(88\%\) of cells, the two-critical tasks \texttt{make\_cereal} and \texttt{make\_tea} in \(81\%\) and \(67\%\), and the four-critical tasks \texttt{cooking} and \texttt{make\_stencil} collapse to \(19\%\) and \(9\%\) Silent, with the Mixed phase swelling to \(23\%\) and \(36\%\) respectively.
+Second, \emph{task length amplifies the assistant's role}: on the long tasks the Assistant-led phase dominates --- \(69\%\) of cells on \texttt{latte\_making} (20 steps), \(48\%\) on \texttt{make\_stencil} (17 steps), \(42\%\) on \texttt{cooking} (14 steps) --- because over a long rollout the assistant's belief tracker accumulates enough evidence to time reminders well, whereas human self-disclosure must be paid for repeatedly.
+We read this as evidence that the framework generalises: tasks with denser failure pressure and longer horizons push the policy into more communicative regimes, but the \emph{topology} of how the policy responds to cost asymmetry is the same on every task --- the same cost axes drive the same four qualitative phases, and the framework requires no retuning to expose them on a new task.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/paper/phase_diagram_multitask.png}
+  \caption{Cross-task cost-asymmetry phase diagrams over
+    \((c_{\mathrm{nar}} \times c_{\mathrm{remind}})\) for all seven
+    benchmark tasks, ordered by increasing criticality pressure.
+    The four-class structure (Silent / Human-led / Assistant-led /
+    Mixed) is preserved on every task; the location and area of the
+    phases shift with task length and the number of critical steps.
+    The Silent fraction shrinks from \(88\%\) (\texttt{make\_coffee},
+    \texttt{make\_sandwich}, 1 critical step) to \(9\%\)
+    (\texttt{make\_stencil}, 4 critical steps), while the
+    Assistant-led phase grows to dominate the long tasks
+    (\(69\%\) on \texttt{latte\_making}).}
+  \label{fig:multitask-phase}
+\end{figure*}
+
+\subsection{Summary}
+\label{sec:val-summary}
+
+The cross-task reward comparison (Section~\ref{sec:val-reward}) establishes that the Proposed cooperative-POMDP policy improves over every fixed-policy baseline a deployed procedure assistant could plausibly use --- None, Passive Assistant, and Heuristic --- with the gap widening on longer, multi-critical tasks, and that MA-IPPO occupies operating points on the (interactions, failures) plane that no fixed baseline can reach.
+The per-axis sweeps establish that this improvement is not a single fixed strategy but a regime-conditional family:
+
+\begin{itemize}
+  \item \textbf{C1 (communication regime):} cost asymmetry between
+        agents produces a sharp role swap in the learned policy
+        (Section~\ref{sec:val-asymmetric}).
+  \item \textbf{C2 (memory dynamics):} the framework's response to
+        the memory axis --- initial level and decay rate --- is the
+        empirical anchor for the next revision
+        (Section~\ref{sec:val-memory}).
+  \item \textbf{C3 (sensing fidelity):} the joint policy responds to
+        the assistant's sensing conditions, deploying narration where
+        it is durable and affordable, and falling back on confirmation
+        where it is not (Section~\ref{sec:val-sensing}).
+\end{itemize}
+
+The trajectory anatomy (Section~\ref{sec:val-trajectories}) confirms that the phase categories correspond to distinct emergent strategies rather than averaged behaviors, and the multi-task replication (Section~\ref{sec:val-multitask}) confirms that the same phase structure surfaces on procedures of varying length and criticality density without retuning, supporting the claim that the three design axes carve communicative behavior at meaningful joints.

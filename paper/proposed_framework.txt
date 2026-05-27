@@ -1,0 +1,144 @@
+\section{Proposed Framework}
+\label{sec:framework}
+
+\subsection{Overview and Design Goals}
+\label{sec:framework-overview}
+
+Section~\ref{sec:rw} identified a gap between two bodies of work: deployed procedural assistants instantiate mixed initiative through one or two local triggers, while decision-theoretic and learning-based formulations of assistance supply a sequential, cost-aware language but leave domain-level modeling open.
+We close this gap for communication-heavy procedural assistance by formulating mixed initiative as a cooperative two-agent POMDP in which the human and the assistant are both decision-makers and share a single objective.
+Rather than designing the assistant's policy directly, we specify a small number of communicative actions, a memory-modulated failure model, and a sensing model, and let policies emerge from optimization.
+
+The framework is designed to expose how three structural factors shape the emergent mixed-initiative behavior:
+
+\begin{enumerate}
+  \item \textbf{Communication regime}: the asymmetric per-action costs of
+        narrating, asking a question, reminding, and confirming.
+  \item \textbf{Expected failure cost}: the product of memory-modulated
+        failure probability and per-step failure cost, which determines the
+        stakes of any given step.
+  \item \textbf{Sensing fidelity}: the assistant's observation-noise
+        dynamics, including how much narration reduces noise and how durable
+        that reduction is.
+\end{enumerate}
+
+Holding the environment dynamics and the action vocabulary fixed and sweeping these three axes lets us isolate their causal effect on the learned policy and on the resulting \emph{division of communicative labor} between user and assistant.
+
+\subsection{Two-Agent Cooperative POMDP}
+\label{sec:framework-pomdp}
+
+We model the problem as a cooperative, decentralized POMDP (Dec-POMDP / two-agent POSG with shared reward) \(\mathcal{M} = \langle \mathcal{S}, \mathcal{A}^{h}, \mathcal{A}^{a}, T, \Omega^{h}, \Omega^{a}, O^{h}, O^{a}, r, \gamma \rangle\), where superscript \(h\) indexes the \emph{human} agent and \(a\) the \emph{assistant} agent.
+At every tick, both agents act simultaneously and receive the same scalar reward.
+
+\paragraph{Agents.}
+The \emph{human} is the agent performing the procedural task.
+The human has perfect knowledge of which step it is currently performing, but its memory of the next critical step decays over time, which raises the risk of a failure if the step is reached without sufficient memory.
+The human can stay silent, narrate the current step, or ask a clarifying question about the nearest upcoming critical step.
+
+The \emph{assistant} is an external agent (e.g.\ a wearable agent or ambient AI) that does not perform the task and does not directly observe the human's memory or the true step.
+It maintains a belief over the human's procedural state from a noisy identity sensor and the human's communicative actions, and chooses among staying silent, confirming the human's current step, or sending a reminder about a specific upcoming critical step.
+
+\subsection{State and Dynamics}
+\label{sec:framework-state}
+
+A procedural task is a sequence of \(N\) steps with a designated subset \(\mathcal{C} \subseteq \{0, \dots, N-1\}\) of critical steps; only critical steps can fail.
+The latent state at tick \(t\) is \[ x_t = (s_t,\; \tau_t,\; m_t,\; n_t), \] where \(s_t \in \{0, \dots, N-1, \bot\}\) is the current step (\(\bot\) denotes task completion), \(\tau_t \in \mathbb{N}\) is the elapsed time within the current step, \(m_t \in [0, m_{\max}]^{N}\) is a per-step memory vector, and \(n_t \in [n_{\min}, n_{\mathrm{base}}]\) is the assistant's observation-noise level.
+We treat the procedural process as semi-Markov: each step \(s\) has a stochastic dwell time with mean \(\mu_s\) and standard deviation \(\sigma_s\), and step transitions follow an empirical ordering distribution sampled at episode start.
+
+\paragraph{Memory dynamics.}
+Memory updates additively from communicative actions, then decays in batch at step transitions: \[ m_{t+1}[i] \;=\; m_t[i] \;+\; \delta_{q}\,\mathbb{1}[a^{h}_t \!=\! \texttt{question}_{\mathrm{next}} \wedge i = \nu(s_t) \wedge i \notin Q_t] \;+\; \delta_{r}\,\mathbb{1}[a^{a}_t \!=\! \texttt{remind}_i], \] clipped to \([m_{\infty}, m_{\max}]\), where \(\nu(s_t)\) is the human's nearest upcoming critical step from \(s_t\) and \(Q_t \subseteq \mathcal{C}\) is the set of critical steps the human has already asked about this episode (ask-once).
+At each step transition we apply a single batched decay \[ m \;\leftarrow\; \max\!\bigl(m \cdot (1 - \lambda_{\mathrm{forget}})^{\tau+1},\; m_{\infty}\bigr), \] which keeps memory stable \emph{within} a step (so that the human can rely on the same memory level while performing it) and concentrates forgetting at step boundaries.
+The floor \(m_{\infty}\) is the \emph{baseline retention level} for procedurally well-learned material: empirically, long-term retention of over-trained content plateaus rather than decaying to zero (Bahrick's permastore phenomenon~\cite{bahrick1984permastore}).
+The exponential decay form between boundaries is a discrete-time approximation; we adopt it for tractability while noting that retention is better fit globally by a power law over very long lags~\cite{wixted2007wickelgren}.
+
+\paragraph{Failure model.}
+Conditional on completing critical step \(i\), failure occurs with probability \[ f_i(m) \;=\; f_{0}\,\bigl(1 - \sigma\bigl(\beta\,(m[i] - \theta)\bigr)\bigr), \] where \(\sigma\) is the logistic function, \(\theta\) is the activation level for 50\% retrieval, and \(\beta\) controls transition sharpness.
+This is the prospective-memory retrieval probability of Einstein and McDaniel's multiprocess framework~\cite{mcdaniel2000multiprocess,einstein2005prospective}: a critical step fails iff retrieval of the associated procedural action fails, with the assistant's reminder acting as an event-based focal cue.
+Failure incurs a per-step cost \(c_{\mathrm{fail}}(i)\) determined by the step's criticality.
+Non-critical steps cannot fail.
+The expected failure cost of step \(i\) is therefore \(\mathbb{E}[\mathrm{fail}_i] = f_i(m) \cdot c_{\mathrm{fail}}(i)\): it depends \emph{both} on memory (controllable by communication) and on intrinsic stakes (a property of the step).
+
+\paragraph{Communication cost.}
+Per-action costs (\(c_{\mathrm{nar}}, c_{q}, c_{\mathrm{remind}}, c_{\mathrm{confirm}}\)) carry a base attention demand, modulated by three context-dependent terms that route the \emph{appropriateness} of communication through the cost structure rather than leaving it implicit.
+First, a \emph{mid-subtask penalty}: following the empirical finding that interrupting at coarse task boundaries cuts resumption time and error rates by roughly a factor of two compared to mid-subtask interruption~\cite{adamczyk2004ifnot,iqbal2007disruption}, an assistant action issued at elapsed time \(\tau\) costs \(c^{a}_{\mathrm{base}} + c_{\mathrm{mid}}\,\mathbb{1}[\tau > \tau_{\mathrm{bound}}]\), where \(\tau_{\mathrm{bound}}\) is a protected boundary window of a few ticks immediately after each step transition.
+Second, a \emph{graded off-timing penalty} for reminders: a reminder about a step at distance \(d = |i - s_t|\) from the human's current step incurs \(c_{\mathrm{off}} \cdot \max(0, d-1)\), so reminders about the current or immediately upcoming step are penalty-free while those further out grow linearly more costly --- a prospective-memory cue delivered far from its trigger is both less useful and more disruptive.
+Third, a \emph{confirmation-habituation} term: the \(k\)-th confirmation within an episode costs \(c_{\mathrm{confirm}}\,(1+\gamma)^{k-1}\), reflecting alert/alarm fatigue --- repeated generic check-ins lose value and become irritating~\cite{cvach2012alarm}.
+Together these give each communicative channel a literature-grounded ``naturalness'' constraint, so that human-like timing emerges from optimization rather than being hand-specified.
+
+\paragraph{Sensing dynamics.}
+The assistant's identity sensor is corrupted by Gaussian noise gated by \(n_t\): with probability \(n_t\) the observation is \(\mathrm{round}(s_t + \mathcal{N}(0,1))\), otherwise it equals \(s_t\).
+Narration by the human resets \(n_t\) to a noise floor \(n_{\min}\); on all other ticks \(n_t\) recovers exponentially toward the baseline \(n_{\mathrm{base}}\): \[ n_{t+1} = n_{\mathrm{base}} - (n_{\mathrm{base}} - n_{\min})\, \exp(-\lambda_{n}\, \Delta t_{\mathrm{nar}}), \] where \(\Delta t_{\mathrm{nar}}\) is the number of ticks since the last narration.
+The pair \((n_{\min},\, \lambda_n)\) controls how \emph{strong} and how \emph{durable} a single narration is.
+
+\subsection{Action Spaces}
+\label{sec:framework-actions}
+
+The two agents share three action categories --- silent, broad utterance, and step-targeted utterance --- but with an intentional asymmetry in how the targeted action is parametrized:
+\[ \mathcal{A}^{h} = \{\texttt{silent},\, \texttt{narrate},\, \texttt{question}_{\mathrm{next}}\}, \qquad \mathcal{A}^{a} = \{\texttt{silent},\, \texttt{confirm}\} \cup \{\texttt{remind}_i : i \in \mathcal{C}\}. \]
+The human's \texttt{question}\(_{\mathrm{next}}\) is a single action that dynamically targets the nearest upcoming critical step \(\arg\min_{i \in \mathcal{C}}\{i \mid i \geq s_t\}\) (if any); the assistant's \texttt{remind}\(_i\) is explicitly parametrized by step \(i\).
+This reflects an asymmetry in how each agent forms a referring expression to a procedural step: a human asking "what's next?" implicitly points to whichever critical step is coming up, while an assistant that has been tracking task structure can elect to remind about any specific step.
+The effects form a clean two-by-two over \{who initiates\} \(\times\) \{what is updated\}.
+The non-targeted utterances both sharpen the assistant's tracking: \texttt{narrate} resets the assistant's observation noise but costs the \emph{human} attention, while \texttt{confirm} achieves the same noise reset --- the assistant solicits a confirmation of the current step and the human's response reveals identity --- but costs the \emph{assistant} a delivery action.
+The targeted utterances both boost the human's memory at a critical step: \texttt{question}\(_{\mathrm{next}}\) raises \(m\) at the resolved upcoming step, \texttt{remind}\(_i\) raises \(m[i]\) at the explicitly chosen step.
+A ``human-likeness'' ask-once constraint applies: each critical step's question can only boost memory the first time the human asks about it in an episode (people do not re-ask a question they have already resolved), so the policy must time its single question per step well rather than poll repeatedly.
+The asymmetry of \emph{who pays which cost} for an effect that is otherwise identical is what makes the cost structure non-trivial.
+
+\subsection{Observations}
+\label{sec:framework-obs}
+
+\paragraph{Human observation.}
+The human observes its own current step identity, elapsed time \(\tau_t\), its own memory at the current step \(m_t[s_t]\), the assistant's last action, the current noise state \(n_t\), and a per-critical-step \emph{asked} indicator \(\mathbf{q}_t \in \{0,1\}^{|\mathcal{C}|}\) recording which critical steps it has already asked about this episode.
+The asked indicator makes the ask-once constraint observable: without it, a repeated \texttt{question}\(_i\) would appear to the policy as a randomly-effective action governed by hidden state, and the human's decision problem would not be Markov in its observation.
+The human therefore has perfect self-knowledge but receives the assistant's communicative actions through the same channel as the assistant uses to act.
+
+\paragraph{Assistant observation.}
+The assistant does not observe \(s_t\), \(\tau_t\), or \(m_t\) directly.
+It maintains a joint semi-Markov belief \(b_t(s, \tau)\) over step identity and elapsed time, updated each tick by (i) prior propagation under the dwell distributions and the empirical identity transition matrix, (ii) a Bayesian update from the noisy identity observation, and (iii) a hard reset to the row \(b_t(s_t^*, \cdot)\) when the human narrates and reveals \(s_t^* = s_t\).
+In addition, the assistant maintains an estimate \(\hat{m}_t \in \mathbb{R}^{|\mathcal{C}|}\) of memory for critical steps that is built only from observed interactions (its own reminders and observed questions, with batched decay), with no access to ground-truth memory.
+The full assistant observation is the marginal step belief \(\sum_\tau b_t(\cdot, \tau)\), the expected dwell \(\mathbb{E}[\tau \mid s]\), the joint belief \(b_t\), the memory estimate \(\hat{m}_t\), the human's last action, and the same per-critical-step asked indicator \(\mathbf{q}_t\) so that the assistant can tell when the human's questions are spent.
+This setup follows the semi-Markov POMDP formulation used in PrISM-style trackers~\cite{DBLP:journals/imwut/ArakawaYMNRDRMC22}, but here the belief is consumed by an RL policy rather than a hand-coded controller.
+
+\subsection{Reward and the Three Design Axes}
+\label{sec:framework-reward}
+
+The shared per-tick reward decomposes additively into a communication term, a failure term, and a terminal completion bonus:
+
+\begin{align*}
+r_t = \;
+& -\, c(a^{h}_t)
+\;-\; c(a^{a}_t)
+\;-\; c_{\mathrm{off}}\, \max(0, d_t - 1) \\
+& -\, \mathbb{1}[\text{step completed at }t \text{ and failed}]
+       \cdot c_{\mathrm{fail}}(s_t) \\
+& +\, \mathbb{1}[s_{t+1} = \bot] \cdot R_{\mathrm{complete}},
+\end{align*}
+
+where \(c(a^{h}_t)\) and \(c(a^{a}_t)\) are the context-modulated per-action costs defined above (base cost plus mid-subtask and habituation terms), and \(d_t = |i - s_t|\) is the step-distance of a reminder about step \(i\) (zero for non-reminder actions).
+The graded off-timing penalty \(c_{\mathrm{off}}\,\max(0, d_t-1)\) discourages reminders that are technically informative but interrupt about a step far from the human's current focus.
+\(R_{\mathrm{complete}}\) provides a clear terminal signal so that policies do not converge to arbitrarily delaying the task.
+
+This reward structure exposes three orthogonal \emph{design axes} that together define a regime:
+
+\paragraph{(1) Communication regime.}
+The vector \(\mathbf{c}_{\mathrm{comm}} = (c_{\mathrm{nar}}, c_{q}, c_{\mathrm{remind}}, c_{\mathrm{confirm}}, c_{\mathrm{off}})\) specifies the asymmetric cost of each communicative action, separately for the human and the assistant.
+For example, a regime with cheap narration and expensive reminders favors solutions in which the human discloses state and the assistant remains nearly silent; a regime with cheap reminders and expensive questions favors a more proactive assistant.
+This axis directly controls the \emph{division of communicative labor}.
+
+\paragraph{(2) Expected failure cost.}
+A step's stakes are governed by the product of two terms: the memory-modulated failure probability \(f_i(m)\), itself shaped by \((f_0, k, \lambda_{\mathrm{forget}}, \delta_q, \delta_r, m_{\mathrm{init}})\), and the per-step failure cost \(c_{\mathrm{fail}}(i)\), shaped by step criticality.
+Increasing either factor raises the marginal value of any communicative action that boosts memory.
+Sweeping this axis lets us study regimes from low-stakes (failure cost dominated by communication cost) to high-stakes (a single failure dominates the episode return).
+
+\paragraph{(3) Sensing fidelity.}
+The triple \((n_{\mathrm{base}}, n_{\min}, \lambda_n)\) controls how informative the assistant's identity sensor is in the absence of narration, how much a single narration reduces noise, and how quickly that reduction decays.
+Sensing fidelity changes the value of human-initiated state disclosure: when narration is durable (\(\lambda_n\) small), occasional narration suffices for the assistant to track the human; when narration fades quickly, the assistant must rely more on its prior or actively seek confirmation.
+
+These three axes correspond to the three factors that recurred in Section~\ref{sec:rw} but were rarely combined within a single deployed system: communication cost, intervention stakes, and observability.
+Holding everything else fixed and sweeping each axis independently is the core experimental device of this paper.
+
+\subsection{Policy Learning}
+\label{sec:framework-learning}
+
+We learn the joint policy with Independent PPO (IPPO) using alternating best-response training: in each round we hold one agent's policy fixed and train the other against it for a fixed number of environment steps, then swap roles.
+Both policies are optimized against the same shared reward, so each best-response step improves a lower bound on the cooperative return.
+Training across regimes shares all hyperparameters; only the regime parameters \((\mathbf{c}_{\mathrm{comm}}, c_{\mathrm{fail}}, \lambda_{\mathrm{forget}}, n_{\mathrm{base}}, n_{\min}, \lambda_n)\) change.
+This design lets us attribute differences in the learned mixed-initiative behavior to the regime axes rather than to optimizer-specific choices.

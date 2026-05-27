@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040"
+     font-family="-apple-system, 'Helvetica Neue', Helvetica, Arial, 'Hiragino Sans', sans-serif">
+
+  <!-- ============================================================
+       Cooperative Two-Agent POMDP for Procedural Assistance
+       Editable in Inkscape / Illustrator / Figma.
+       Each labelled <g id="..."> is independently selectable.
+       Subscript convention: <tspan font-size="0.7em" dy="0.25em">x</tspan>
+       with a matching <tspan dy="-0.25em"> </tspan> reset when more
+       text follows on the same line.
+       ============================================================ -->
+
+  <defs>
+    <marker id="arrowDark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrowReward" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4a8a2a"/>
+    </marker>
+    <marker id="arrowGraph" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+
+    <symbol id="cloud" viewBox="0 0 220 140">
+      <path d="M40,90 q-30,0 -30,-25 q0,-25 28,-28 q3,-22 28,-22
+               q15,0 22,12 q12,-12 30,-12 q25,0 30,22
+               q24,2 24,25 q0,25 -28,28 q-3,18 -25,18
+               q-15,0 -22,-10 q-12,12 -28,12 q-22,0 -29,-20 z"
+            fill="#f5f5f7" stroke="#bdbdbd" stroke-width="2"/>
+      <circle cx="38"  cy="115" r="9"  fill="#f5f5f7" stroke="#bdbdbd" stroke-width="2"/>
+      <circle cx="22"  cy="128" r="6"  fill="#f5f5f7" stroke="#bdbdbd" stroke-width="2"/>
+    </symbol>
+  </defs>
+
+  <rect width="1600" height="1040" fill="#ffffff"/>
+
+  <!-- =====================================================
+       TITLE
+       ===================================================== -->
+  <g id="title">
+    <text x="60" y="78" font-size="40" font-weight="700" fill="#222">
+      Cooperative Two-Agent POMDP
+    </text>
+    <text x="60" y="118" font-size="22" fill="#666">
+      Procedural assistance &#8212; shared reward, simultaneous actions
+    </text>
+  </g>
+
+  <!-- =====================================================
+       ASSISTANT BLOCK (top)
+       ===================================================== -->
+  <g id="assistant-cloud">
+    <use href="#cloud" x="60" y="220" width="240" height="150"/>
+    <text x="180" y="285" text-anchor="middle" font-size="18" fill="#444">belief</text>
+    <text x="180" y="312" text-anchor="middle" font-size="18" fill="#444">
+      b(s, &#964;), m&#770;
+    </text>
+    <text x="180" y="338" text-anchor="middle" font-size="16" fill="#888">
+      (unobserved state)
+    </text>
+  </g>
+
+  <g id="assistant-box">
+    <rect x="380" y="220" width="540" height="180" rx="22" ry="22"
+          fill="#dceaf3" stroke="#4a90b8" stroke-width="3"/>
+    <text x="420" y="270" font-size="40">&#129302;</text>
+    <text x="478" y="278" font-size="32" font-weight="600" fill="#1f4d66">
+      Assistant &#960;<tspan font-size="0.7em" dy="0.25em" font-style="italic">a</tspan><tspan dy="-0.25em">(&#945;)</tspan>
+    </text>
+    <text x="420" y="320" font-size="18" fill="#234d63">
+      Actions: { silent, confirm, remind<tspan font-size="0.7em" dy="0.25em">i</tspan> }
+    </text>
+    <text x="420" y="348" font-size="18" fill="#234d63">
+      Obs: marginal belief, m&#770;, n
+    </text>
+    <text x="420" y="376" font-size="16" fill="#5a7689" font-style="italic">
+      external agent (e.g. wearable AI)
+    </text>
+  </g>
+
+  <path d="M300,300 Q345,310 380,310" stroke="#bdbdbd" stroke-width="2"
+        fill="none" stroke-dasharray="4 4"/>
+
+  <!-- =====================================================
+       HUMAN BLOCK (bottom)
+       ===================================================== -->
+  <g id="human-cloud">
+    <use href="#cloud" x="60" y="640" width="240" height="150"/>
+    <text x="180" y="700" text-anchor="middle" font-size="18" fill="#444">
+      self-knowledge:
+    </text>
+    <text x="180" y="727" text-anchor="middle" font-size="18" fill="#444">
+      s, &#964;, m[s]
+    </text>
+    <text x="180" y="754" text-anchor="middle" font-size="16" fill="#888">
+      (perfect, but memory decays)
+    </text>
+  </g>
+
+  <g id="human-box">
+    <rect x="380" y="620" width="540" height="180" rx="22" ry="22"
+          fill="#fbeccd" stroke="#d4a85a" stroke-width="3"/>
+    <text x="420" y="670" font-size="40">&#129489;</text>
+    <text x="478" y="678" font-size="32" font-weight="600" fill="#6e5320">
+      Human &#960;<tspan font-size="0.7em" dy="0.25em" font-style="italic">h</tspan><tspan dy="-0.25em">(&#952;)</tspan>
+    </text>
+    <text x="420" y="720" font-size="18" fill="#6e5320">
+      Actions: { silent, narrate, question<tspan font-size="0.7em" dy="0.25em">next</tspan> }
+    </text>
+    <text x="420" y="748" font-size="18" fill="#6e5320">
+      Obs: s, &#964;, m[s], n
+    </text>
+    <text x="420" y="776" font-size="16" fill="#8a6f3f" font-style="italic">
+      performs the procedural task
+    </text>
+  </g>
+
+  <path d="M300,710 Q345,710 380,710" stroke="#bdbdbd" stroke-width="2"
+        fill="none" stroke-dasharray="4 4"/>
+
+  <!-- =====================================================
+       SHARED REWARD (middle)
+       ===================================================== -->
+  <g id="reward-box">
+    <rect x="430" y="450" width="440" height="140" rx="18" ry="18"
+          fill="#e1efd2" stroke="#6ba042" stroke-width="3"/>
+    <text x="650" y="490" text-anchor="middle" font-size="26"
+          font-weight="700" fill="#345e1c">
+      Shared Reward &#160;r<tspan font-size="0.7em" dy="0.25em">t</tspan>
+    </text>
+    <text x="650" y="535" text-anchor="middle" font-size="17" fill="#345e1c">
+      &#8722; c(a&#7506;) &#8722; c(a&#7491;) &#8722; &#120793;[fail]&#183;c<tspan font-size="0.7em" dy="0.25em">fail</tspan><tspan dy="-0.25em">(s) &#160;+&#160; &#120793;[done]&#183;R</tspan><tspan font-size="0.7em" dy="0.25em">complete</tspan>
+    </text>
+    <text x="650" y="577" text-anchor="middle" font-size="15"
+          font-style="italic" fill="#5a7d3a">
+      cooperative: identical reward to both agents
+    </text>
+  </g>
+
+  <path d="M650,450 L650,400" stroke="#4a8a2a" stroke-width="3"
+        fill="none" marker-end="url(#arrowReward)"/>
+  <text x="660" y="430" font-size="18" fill="#4a8a2a" font-weight="600">
+    r<tspan font-size="0.7em" dy="0.25em">t</tspan>
+  </text>
+
+  <path d="M650,590 L650,620" stroke="#4a8a2a" stroke-width="3"
+        fill="none" marker-end="url(#arrowReward)"/>
+  <text x="660" y="615" font-size="18" fill="#4a8a2a" font-weight="600">
+    r<tspan font-size="0.7em" dy="0.25em">t</tspan>
+  </text>
+
+  <!-- =====================================================
+       TASK ENVIRONMENT (right)
+       ===================================================== -->
+  <g id="env-box">
+    <rect x="1050" y="220" width="500" height="580" rx="22" ry="22"
+          fill="#eef0e2" stroke="#7a7d52" stroke-width="3"/>
+    <text x="1300" y="270" text-anchor="middle" font-size="30"
+          font-weight="700" fill="#3a3d20">
+      Task Environment
+    </text>
+
+    <!-- latent state pane -->
+    <rect x="1080" y="300" width="440" height="170" rx="14" ry="14"
+          fill="#ffffff" stroke="#a8aa86" stroke-width="2"/>
+    <text x="1300" y="335" text-anchor="middle" font-size="19"
+          font-weight="600" fill="#3a3d20">
+      latent state &#160;x<tspan font-size="0.7em" dy="0.25em">t</tspan><tspan dy="-0.25em"> = (s, &#964;, m, n)</tspan>
+    </text>
+    <text x="1100" y="370" font-size="16" fill="#3a3d20">s &#8212; current step (critical &#8712; C)</text>
+    <text x="1100" y="395" font-size="16" fill="#3a3d20">&#964; &#8212; elapsed time within step</text>
+    <text x="1100" y="420" font-size="16" fill="#3a3d20">m &#8212; per-step memory vector</text>
+    <text x="1100" y="445" font-size="16" fill="#3a3d20">n &#8212; assistant observation noise</text>
+
+    <!-- ============= TASK GRAPH G ============= -->
+    <g id="task-graph">
+      <text x="1300" y="490" text-anchor="middle" font-size="19"
+            font-weight="600" fill="#3a3d20">
+        task graph &#160;G = (steps, transitions, failure costs)
+      </text>
+
+      <!-- nodes: s0 s1 (s2*) s3 (s4*) bot -->
+      <!-- centre y -->
+      <!-- positions x: 1110 1180 1250 1320 1390 1490 -->
+
+      <!-- s0 -->
+      <circle cx="1110" cy="580" r="22" fill="#ffffff" stroke="#555" stroke-width="2"/>
+      <text x="1110" y="586" text-anchor="middle" font-size="15" fill="#222">s<tspan font-size="0.7em" dy="0.25em">0</tspan></text>
+
+      <!-- s1 -->
+      <circle cx="1180" cy="580" r="22" fill="#ffffff" stroke="#555" stroke-width="2"/>
+      <text x="1180" y="586" text-anchor="middle" font-size="15" fill="#222">s<tspan font-size="0.7em" dy="0.25em">1</tspan></text>
+
+      <!-- s2 (critical) -->
+      <circle cx="1250" cy="580" r="22" fill="#fde2e2" stroke="#c64a4a" stroke-width="2.5"/>
+      <text x="1250" y="586" text-anchor="middle" font-size="15" fill="#7a1f1f" font-weight="600">s<tspan font-size="0.7em" dy="0.25em">2</tspan><tspan dy="-0.25em">*</tspan></text>
+
+      <!-- s3 -->
+      <circle cx="1320" cy="580" r="22" fill="#ffffff" stroke="#555" stroke-width="2"/>
+      <text x="1320" y="586" text-anchor="middle" font-size="15" fill="#222">s<tspan font-size="0.7em" dy="0.25em">3</tspan></text>
+
+      <!-- s4 (critical) -->
+      <circle cx="1390" cy="580" r="22" fill="#fde2e2" stroke="#c64a4a" stroke-width="2.5"/>
+      <text x="1390" y="586" text-anchor="middle" font-size="15" fill="#7a1f1f" font-weight="600">s<tspan font-size="0.7em" dy="0.25em">4</tspan><tspan dy="-0.25em">*</tspan></text>
+
+      <!-- terminal -->
+      <circle cx="1490" cy="580" r="22" fill="#e1efd2" stroke="#4a8a2a" stroke-width="2.5"/>
+      <text x="1490" y="588" text-anchor="middle" font-size="20" fill="#345e1c" font-weight="700">&#8869;</text>
+
+      <!-- adjacent transition arrows -->
+      <line x1="1132" y1="580" x2="1158" y2="580" stroke="#555" stroke-width="2" marker-end="url(#arrowGraph)"/>
+      <line x1="1202" y1="580" x2="1228" y2="580" stroke="#555" stroke-width="2" marker-end="url(#arrowGraph)"/>
+      <line x1="1272" y1="580" x2="1298" y2="580" stroke="#555" stroke-width="2" marker-end="url(#arrowGraph)"/>
+      <line x1="1342" y1="580" x2="1368" y2="580" stroke="#555" stroke-width="2" marker-end="url(#arrowGraph)"/>
+      <line x1="1412" y1="580" x2="1468" y2="580" stroke="#555" stroke-width="2" marker-end="url(#arrowGraph)"/>
+
+      <!-- non-adjacent transition arcs (alternative orderings sampled per episode) -->
+      <path d="M 1125 562 Q 1180 540 1233 562" fill="none" stroke="#888"
+            stroke-width="1.5" marker-end="url(#arrowGraph)"/>
+      <path d="M 1195 562 Q 1290 515 1373 562" fill="none" stroke="#888"
+            stroke-width="1.5" marker-end="url(#arrowGraph)"/>
+
+      <!-- failure-cost labels (below critical steps) -->
+      <line x1="1250" y1="602" x2="1250" y2="635" stroke="#c64a4a" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="1250" y="660" text-anchor="middle" font-size="14" fill="#7a1f1f">
+        c<tspan font-size="0.75em" dy="0.25em">fail</tspan><tspan dy="-0.25em">(2)</tspan>
+      </text>
+
+      <line x1="1390" y1="602" x2="1390" y2="635" stroke="#c64a4a" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="1390" y="660" text-anchor="middle" font-size="14" fill="#7a1f1f">
+        c<tspan font-size="0.75em" dy="0.25em">fail</tspan><tspan dy="-0.25em">(4)</tspan>
+      </text>
+
+      <!-- completion bonus -->
+      <line x1="1490" y1="602" x2="1490" y2="635" stroke="#4a8a2a" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="1490" y="660" text-anchor="middle" font-size="14" fill="#345e1c">
+        +R<tspan font-size="0.75em" dy="0.25em">comp</tspan>
+      </text>
+
+      <!-- legend for critical / normal nodes -->
+      <g transform="translate(1080,705)">
+        <circle cx="14" cy="10" r="9" fill="#ffffff" stroke="#555" stroke-width="2"/>
+        <text x="32" y="15" font-size="13" fill="#3a3d20">normal step</text>
+
+        <circle cx="170" cy="10" r="9" fill="#fde2e2" stroke="#c64a4a" stroke-width="2"/>
+        <text x="188" y="15" font-size="13" fill="#3a3d20">critical step (* can fail)</text>
+
+        <text x="14" y="45" font-size="13" fill="#666" font-style="italic">
+          transitions follow empirical ordering distribution (sampled per episode)
+        </text>
+        <text x="14" y="65" font-size="13" fill="#666" font-style="italic">
+          failure prob. depends on memory at step:  f<tspan font-size="0.75em" dy="0.25em">i</tspan><tspan dy="-0.25em">(m) = f</tspan><tspan font-size="0.75em" dy="0.25em">0</tspan><tspan dy="-0.25em"> (1 &#8722; &#963;(&#946;(m[i] &#8722; &#952;)))</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- =====================================================
+       FLOW ARROWS  (action / observation channels)
+       ===================================================== -->
+
+  <path d="M920,275 Q985,275 1050,300" stroke="#333" stroke-width="2.5"
+        fill="none" marker-end="url(#arrowDark)"/>
+  <text x="945" y="263" font-size="17" fill="#333" font-weight="600">a&#7491;</text>
+  <text x="935" y="248" font-size="14" fill="#666">Action</text>
+
+  <path d="M1050,370 Q985,360 920,355" stroke="#333" stroke-width="2.5"
+        fill="none" marker-end="url(#arrowDark)"/>
+  <text x="945" y="385" font-size="17" fill="#333" font-weight="600">o&#7491;</text>
+  <text x="935" y="403" font-size="14" fill="#666">Obs (noisy)</text>
+
+  <path d="M920,675 Q985,675 1050,700" stroke="#333" stroke-width="2.5"
+        fill="none" marker-end="url(#arrowDark)"/>
+  <text x="945" y="663" font-size="17" fill="#333" font-weight="600">a&#7506;</text>
+  <text x="935" y="648" font-size="14" fill="#666">Action</text>
+
+  <path d="M1050,755 Q985,755 920,750" stroke="#333" stroke-width="2.5"
+        fill="none" marker-end="url(#arrowDark)"/>
+  <text x="945" y="780" font-size="17" fill="#333" font-weight="600">o&#7506;</text>
+  <text x="935" y="798" font-size="14" fill="#666">Obs</text>
+
+  <!-- =====================================================
+       ACTION VOCABULARY (bottom)
+       ===================================================== -->
+  <g id="actions-panel">
+    <rect x="60" y="850" width="1490" height="170" rx="12" ry="12"
+          fill="#fafafa" stroke="#cccccc" stroke-width="1"/>
+    <text x="80" y="884" font-size="20" font-weight="700" fill="#222">
+      Action vocabulary
+    </text>
+
+    <!-- Human column -->
+    <g id="actions-human" transform="translate(80,910)">
+      <text x="0" y="0" font-size="17" font-weight="700" fill="#6e5320">
+        Human &#160;a<tspan font-size="0.7em" dy="0.25em">t</tspan><tspan dy="-0.25em"> </tspan><tspan font-size="0.85em" baseline-shift="super">h</tspan>
+      </text>
+
+      <text x="0"   y="32" font-size="15" font-weight="600" fill="#3a2a10">silent</text>
+      <text x="170" y="32" font-size="14" fill="#3a3d20">no utterance</text>
+
+      <text x="0"   y="62" font-size="15" font-weight="600" fill="#3a2a10">narrate</text>
+      <text x="170" y="62" font-size="14" fill="#3a3d20">
+        announce current step &#8594; resets assistant&#8217;s sensor noise n
+      </text>
+
+      <text x="0"   y="92" font-size="15" font-weight="600" fill="#3a2a10">
+        question<tspan font-size="0.7em" dy="0.25em">next</tspan>
+      </text>
+      <text x="170" y="92" font-size="14" fill="#3a3d20">
+        ask about nearest upcoming critical step &#8594; +&#948;<tspan font-size="0.75em" dy="0.25em">q</tspan><tspan dy="-0.25em"> to m at that step</tspan>
+      </text>
+    </g>
+
+    <!-- Assistant column -->
+    <g id="actions-assistant" transform="translate(820,910)">
+      <text x="0" y="0" font-size="17" font-weight="700" fill="#1f4d66">
+        Assistant &#160;a<tspan font-size="0.7em" dy="0.25em">t</tspan><tspan dy="-0.25em"> </tspan><tspan font-size="0.85em" baseline-shift="super">a</tspan>
+      </text>
+
+      <text x="0"   y="32" font-size="15" font-weight="600" fill="#102a3a">silent</text>
+      <text x="170" y="32" font-size="14" fill="#234d63">no utterance</text>
+
+      <text x="0"   y="62" font-size="15" font-weight="600" fill="#102a3a">confirm</text>
+      <text x="170" y="62" font-size="14" fill="#234d63">
+        ask &#8220;still on s?&#8221; &#8594; human reply resets noise n
+      </text>
+
+      <text x="0"   y="92" font-size="15" font-weight="600" fill="#102a3a">
+        remind<tspan font-size="0.7em" dy="0.25em">i</tspan>
+      </text>
+      <text x="170" y="92" font-size="14" fill="#234d63">
+        cue about step i &#8594; +&#948;<tspan font-size="0.75em" dy="0.25em">r</tspan><tspan dy="-0.25em"> to m[i] &#160;(off-timing penalty grows with |i &#8722; s|)</tspan>
+      </text>
+    </g>
+
+  </g>
+
+</svg>

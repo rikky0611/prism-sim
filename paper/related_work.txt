@@ -1,0 +1,178 @@
+\section{Related Work}
+\label{sec:rw}
+
+\subsection{Existing Assistive Systems for Real-World Tasks}
+
+\begin{table}[t]
+\centering
+\small
+\caption{
+Initiative triggers used to characterize existing real-world task assistants.
+A trigger denotes the local if-condition that maps sensed context into assistant action.
+}
+\label{tab:initiative-triggers}
+\begin{tabularx}{\columnwidth}{p{0.34\columnwidth} Y}
+\toprule
+\textbf{Trigger} & \textbf{Local decision rule} \\
+\midrule
+\textbf{Request-gated}
+& Act only when the user explicitly asks for assistance or discloses task state. \\
+
+\textbf{Always-on}
+& Provide continuous augmentation without a discrete intervention trigger. \\
+
+\textbf{Progress-gated}
+& Act when inferred procedural, recipe, or tutorial progress reaches a designed assistance opportunity. \\
+
+\textbf{Error/risk-gated}
+& Act when an error, omission, mismatch, or safety risk is detected or predicted. \\
+
+\textbf{Uncertainty-gated}
+& Act when the assistant's belief, tracker, or model confidence is low. \\
+
+\textbf{Intent-gated}
+& Act when inferred user intent suggests an assistance opportunity. \\
+
+\textbf{Value/cost-gated}
+& Act when predicted assistance value exceeds interruption or delivery cost. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{
+Real-world task assistants grouped by their initiative policy.
+We order systems from passive or user-led assistance, to assistant-led proactive assistance, to mixed-initiative assistance.
+The \emph{initiative trigger} column uses the taxonomy in Table~\ref{tab:initiative-triggers}.
+}
+\label{tab:existing-task-assistants}
+\begin{tabularx}{\textwidth}{p{0.20\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.20\textwidth} Y}
+\toprule
+\textbf{System} &
+\textbf{Modality} &
+\textbf{User initiative} &
+\textbf{Assistant initiative} &
+\textbf{Initiative trigger} \\
+\midrule
+
+\multicolumn{5}{l}{\emph{Passive or user-led assistance}} \\
+\midrule
+Cooking with Agents~\cite{DBLP:conf/chi/JaberZKHGBCM24}
+& Voice assistant
+& Contextual query; state disclosure
+& N/A
+& Request-gated \\
+
+PrISM-Q\&A~\cite{DBLP:journals/imwut/PrISMQA}
+& Smartwatch
+& Contextual query
+& N/A
+& Request-gated \\
+
+\midrule
+\multicolumn{5}{l}{\emph{Assistant-led proactive assistance}} \\
+\midrule
+
+CookAR~\cite{DBLP:conf/uist/0005TKYPZFTZ24}
+& AR headset
+& N/A
+& Perceptual augmentation
+& Always-on \\
+
+AdapTutAR~\cite{DBLP:conf/chi/HuangQWPSCRQ21}
+& AR headset
+& N/A
+& Unsolicited guidance
+& Progress-gated \\
+
+Chan~\etal~\cite{Chan2024Detecting}
+& Wearable camera
+& N/A
+& Unsolicited guidance
+& Error/risk-gated \\
+
+PrISM-Observer~\cite{DBLP:journals/corr/PrISM-Observer}
+& Smartwatch
+& N/A
+& Unsolicited guidance
+& Progress-gated; Error/risk-gated \\
+
+Satori~\cite{DBLP:conf/chi/LiWCTQLWSQ25}
+& AR headset
+& N/A
+& Unsolicited guidance
+& Intent-gated \\
+
+ProMemAssist~\cite{DBLP:conf/uist/Pu0SFSJ25}
+& AR headset
+& N/A
+& Unsolicited guidance
+& Value/cost-gated \\
+
+\midrule
+\multicolumn{5}{l}{\emph{Mixed-initiative assistance}} \\
+\midrule
+PrISM~\cite{DBLP:conf/uist/ArakawaPPLG25}
+& Smartwatch; Wearable camera
+& Contextual query; state disclosure
+& Unsolicited guidance; confirmation request
+& Request-gated; uncertainty-gated; progress-gated; error/risk-gated \\
+
+Vid2Coach~\cite{DBLP:conf/uist/HuhXDAGP25}
+& AR headset
+& Contextual query
+& Unsolicited guidance
+& Request-gated; progress-gated; error/risk-gated \\
+
+AROMA~\cite{DBLP:conf/uist/NingLKSCT0LL25}
+& Wearable camera
+& Contextual query; state disclosure
+& Unsolicited guidance
+& Request-gated; progress-gated; error/risk-gated \\
+
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+
+HCI systems have increasingly moved from static instruction delivery toward situated task assistants that sense users' physical context and provide contextual guidance.
+Recent systems couple multimodal sensing with conversational or generative AI: context-aware cooking assistants respond to users' task state~\cite{DBLP:conf/chi/JaberZKHGBCM24}; the PrISM line of work tracks procedural steps, triggers proactive interventions, answers step-aware questions, and adapts task models through mixed-initiative dialogue~\cite{DBLP:journals/imwut/ArakawaYMNRDRMC22,DBLP:journals/imwut/PrISMQA,DBLP:journals/corr/PrISM-Observer,DBLP:conf/uist/ArakawaPPLG25}; and accessibility-oriented systems such as Vid2Coach~\cite{DBLP:conf/uist/HuhXDAGP25}, AROMA~\cite{DBLP:conf/uist/NingLKSCT0LL25}, CookAR~\cite{DBLP:conf/uist/0005TKYPZFTZ24}, and OSCAR~\cite{DBLP:conf/assets/LiN0C25} use wearable cameras, recipe/video grounding, object state, and non-visual cues to support BLV cooking and how-to tasks.
+Recent AR and wearable AI systems broaden this agenda beyond procedural guidance: systems such as Satori~\cite{DBLP:conf/chi/LiWCTQLWSQ25} and ProMemAssist~\cite{DBLP:conf/uist/Pu0SFSJ25} propose various user-centric approaches to implementing the assistant's proactiveness.
+
+\tabref{tab:initiative-triggers} defines the trigger vocabulary we use to describe when an assistant takes initiative, and \tabref{tab:existing-task-assistants} applies this vocabulary to real-world task assistants.
+We use \emph{user initiative} to refer to user actions that request assistance or update the assistant's belief, such as contextual queries and state disclosures.
+We use \emph{assistant initiative} to refer to system actions that redirect the interaction or provide task support without an immediate user request, such as unsolicited guidance, confirmation requests, or perceptual augmentation.
+This separates \emph{what} action is taken from \emph{why} it is taken: many systems provide similar forms of unsolicited guidance, but differ in whether that guidance is gated by requests, progress, errors, uncertainty, intent, or interruption cost.
+
+This comparison highlights a common pattern.
+Existing task assistants instantiate mixed initiative through local triggers: a system answers when asked, augments perception continuously, intervenes when an error is detected, provides guidance when progress reaches a designed opportunity, asks for clarification when confidence is low, or suppresses intervention when interruption cost is high.
+These triggers are effective design patterns, and recent systems increasingly combine several of them within a single assistant.
+However, the policy layer is usually specified as system-specific rules, prompt programs, timing predictors, or a single assistance strategy optimized for task success, tracking accuracy, usability, or interruption reduction.
+Even when systems consider user burden or unobtrusiveness, they do not generally formulate assistance as a joint user--assistant policy that chooses among communicative actions with user-specific costs.
+
+Our work targets this policy layer directly.
+Rather than treating proactive and responsive assistance as fixed modes or local triggers, we formulate mixed initiative as a cost-aware multi-agent coordination problem.
+In our formulation, different mixed-initiative costs trade off against sensing uncertainty and downstream failure cost.
+This enables us to explain why different users or sensing settings give rise to different initiative patterns, and to learn personalized policies that adapt not only to task state, but also to the cost structure of communication itself.
+
+\subsection{Factors in Mixed-Initiative Coordination}
+
+Classical work on mixed initiative treats initiative allocation as a dynamic negotiation between user and system rather than a fixed division of labor~\cite{allen1999mixed,DBLP:conf/chi/Horvitz99}. In particular, Horvitz~\cite{DBLP:conf/chi/Horvitz99} argued that systems should decide when to act, ask, or defer by reasoning over uncertainty about user goals, the expected value of information, timing, attention, and the costs and benefits of intervention. 
+Subsequent HCI and HAI work has continued to broaden this set of factors and emphasized that initiative is not a static automation level but shifts continuously across people, tasks, and contexts~\cite{DBLP:journals/tiis/TsiakasM24,DBLP:conf/ACMdis/LoboKRBP24,DBLP:conf/chi/SalikutlukSHSFB24}.
+The deployed task assistants in Table~\ref{tab:existing-task-assistants} draw on this vocabulary, but typically operationalize only one or two of these factors as local triggers.
+A complementary line of work formalizes assistance as a sequential decision problem so that several of these factors can be reasoned over jointly. Fern~\etal~\cite{DBLP:journals/jair/FernNJT14} model assistance as a hidden-goal MDP, in which the assistant must infer a latent user goal from observed actions and choose helper actions accordingly.
+Cooperative IRL~\cite{DBLP:conf/nips/Hadfield-Menell16} extends this to a two-agent game in which user and assistant share a reward but the assistant is initially uncertain about it; optimal solutions exhibit active teaching and communicative actions rather than acting in isolation.
+Multi-agent planning models incorporate communication as a costed action in cooperative decision making~\cite{DBLP:conf/agents/XuanLZ01,DBLP:journals/jair/PynadathT02}, and shared autonomy methods reason about user intent uncertainty, task reward, and assistance policies in human-robot control~\cite{DBLP:journals/ijrr/JavdaniAPSB18,DBLP:journals/ijrr/DraganS13,DBLP:conf/hri/NikolaidisZHS17}.
+Most recently, Gori~\etal~\cite{DBLP:conf/chi/GoriNJO26} cast assistive interfaces as two-agent partially observable stochastic games, making explicit user and assistant states, observations, actions, policies, and rewards.
+Together these formulations provide a general language for sequential, cost-aware assistance. 
+However, they are deliberately domain-agnostic: the choice of action vocabulary, the cost terms that enter the reward, and how those costs are grounded in users' actual preferences and behaviors are left to the system designer.
+
+Ubicomp works on interruptibility and context-aware notification grounds, one of these cost terms in the sensed context.
+Sensing models estimate whether a user is available, engaged, or likely to experience an intervention as burdensome, and gate notifications accordingly~\cite{DBLP:conf/chi/HudsonFAAFKLY03,DBLP:conf/chi/FogartyKAGTH05,DBLP:conf/chi/HoI05}.
+This makes intervention cost concrete and user-specific, but the question asked is one-directional---whether to interrupt now---rather than an allocation among bidirectional communicative actions such as reminding, confirming, asking, narrating, or staying silent.
+Taken together, this body of work identifies the factors that should drive initiative---uncertainty, attention, user intent, intervention cost, task reward, and communication cost---and supplies the formal language in which to combine them, while ubicomp work shows that at least one of these costs can be grounded in sensed user context.
+What remains is a domain-level gap for communication-heavy procedural assistance: which communicative actions matter, how their asymmetric user and assistant costs trade off against sensing uncertainty and downstream failure cost, and how the resulting policy should vary across users.
+In this work, we define a small set of communicative actions---reminders and confirmations issued by the assistant, and questions and self-narrations issued by the user---each with its own user- and assistant-side cost, and learn joint user--assistant policies over these actions.
+This lets us explain why qualitatively different interaction modes emerge under different cost structures, and test whether the resulting policies are both behaviorally effective and subjectively preferred.

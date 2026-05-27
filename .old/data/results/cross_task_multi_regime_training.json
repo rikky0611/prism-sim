@@ -4,39 +4,33 @@
     "n_tasks": 7,
     "n_regimes": 3,
     "n_models": 21,
-    "timesteps_per_model": 50000,
-    "created_at": "2026-02-16 19:46:31",
+    "timesteps_per_model": 200000,
+    "created_at": "2026-02-18 15:54:30",
     "resume_mode": false,
-    "total_training_duration_seconds": 1920.8031842708588,
-    "total_training_duration_minutes": 32.013386404514314,
+    "total_training_duration_seconds": 7505.528445482254,
+    "total_training_duration_minutes": 125.09214075803757,
     "successful_models": 21,
     "failed_models": 0,
     "skipped_models": 0
   },
   "regimes": {
-    "very_high_stakes": {
-      "c_int": 2.0,
-      "c_fail": 30.0,
-      "ratio": 15.0,
+    "extremely_high": {
+      "c_fail": 50.0,
       "f0_base": 0.6,
-      "lambda_forget": 0.1,
-      "description": "Surgery/Critical - failures extremely costly"
+      "lambda_forget": 0.03,
+      "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
     },
-    "balanced": {
-      "c_int": 5.0,
+    "moderate": {
       "c_fail": 15.0,
-      "ratio": 3.0,
       "f0_base": 0.6,
-      "lambda_forget": 0.1,
-      "description": "Standard assistance - balanced costs"
+      "lambda_forget": 0.03,
+      "description": "Standard assistance - balanced costs (c_int=1 fixed)"
     },
-    "moderate_low": {
-      "c_int": 5.0,
-      "c_fail": 10.0,
-      "ratio": 2.0,
+    "extremely_low": {
+      "c_fail": 5.0,
       "f0_base": 0.6,
-      "lambda_forget": 0.1,
-      "description": "Casual task - low stakes"
+      "lambda_forget": 0.03,
+      "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
     }
   },
   "tasks": {
@@ -73,17 +67,15 @@
     {
       "success": true,
       "task_name": "make_cereal",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_cereal/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.69385957717896,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/make_cereal/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 353.431081533432,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -93,17 +85,15 @@
     {
       "success": true,
       "task_name": "make_coffee",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_coffee/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 89.14102053642273,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/make_coffee/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 346.8117527961731,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -113,17 +103,15 @@
     {
       "success": true,
       "task_name": "make_tea",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_tea/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 89.99662709236145,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/make_tea/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 349.7549488544464,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -133,17 +121,15 @@
     {
       "success": true,
       "task_name": "make_sandwich",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_sandwich/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 88.88737058639526,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/make_sandwich/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 351.7101159095764,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -153,17 +139,15 @@
     {
       "success": true,
       "task_name": "cooking",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/cooking/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 91.56670236587524,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/cooking/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 356.3961732387543,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 14,
@@ -173,17 +157,15 @@
     {
       "success": true,
       "task_name": "make_stencil",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/make_stencil/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 93.87214732170105,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/make_stencil/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 361.8492419719696,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 17,
@@ -193,17 +175,15 @@
     {
       "success": true,
       "task_name": "latte_making",
-      "regime_name": "very_high_stakes",
-      "model_path": "/home/ec2-user/prism-sim/models/very_high_stakes/latte_making/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 93.54042196273804,
+      "regime_name": "extremely_high",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_high/latte_making/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 372.71069526672363,
       "regime_config": {
-        "c_int": 2.0,
-        "c_fail": 30.0,
-        "ratio": 15.0,
+        "c_fail": 50.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Surgery/Critical - failures extremely costly"
+        "lambda_forget": 0.03,
+        "description": "Ultra-critical scenarios - failures catastrophic (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 20,
@@ -213,17 +193,15 @@
     {
       "success": true,
       "task_name": "make_cereal",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_cereal/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 88.46462821960449,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/make_cereal/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 349.34803581237793,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -233,17 +211,15 @@
     {
       "success": true,
       "task_name": "make_coffee",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_coffee/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 91.76432728767395,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/make_coffee/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 350.92122435569763,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -253,17 +229,15 @@
     {
       "success": true,
       "task_name": "make_tea",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_tea/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.40699791908264,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/make_tea/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 349.4078457355499,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -273,17 +247,15 @@
     {
       "success": true,
       "task_name": "make_sandwich",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_sandwich/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.2784059047699,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/make_sandwich/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 352.5005576610565,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -293,17 +265,15 @@
     {
       "success": true,
       "task_name": "cooking",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/cooking/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 92.36702394485474,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/cooking/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 364.3364009857178,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 14,
@@ -313,17 +283,15 @@
     {
       "success": true,
       "task_name": "make_stencil",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/make_stencil/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 93.50438570976257,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/make_stencil/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 368.985328912735,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 17,
@@ -333,17 +301,15 @@
     {
       "success": true,
       "task_name": "latte_making",
-      "regime_name": "balanced",
-      "model_path": "/home/ec2-user/prism-sim/models/balanced/latte_making/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 93.69173216819763,
+      "regime_name": "moderate",
+      "model_path": "/home/ec2-user/prism-sim/models/moderate/latte_making/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 367.4217336177826,
       "regime_config": {
-        "c_int": 5.0,
         "c_fail": 15.0,
-        "ratio": 3.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Standard assistance - balanced costs"
+        "lambda_forget": 0.03,
+        "description": "Standard assistance - balanced costs (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 20,
@@ -353,17 +319,15 @@
     {
       "success": true,
       "task_name": "make_cereal",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_cereal/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 89.8198184967041,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/make_cereal/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 355.4530551433563,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -373,17 +337,15 @@
     {
       "success": true,
       "task_name": "make_coffee",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_coffee/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.24133491516113,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/make_coffee/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 349.6037766933441,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 8,
@@ -393,17 +355,15 @@
     {
       "success": true,
       "task_name": "make_tea",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_tea/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.68208742141724,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/make_tea/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 357.45485377311707,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -413,17 +373,15 @@
     {
       "success": true,
       "task_name": "make_sandwich",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_sandwich/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 90.53052234649658,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/make_sandwich/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 349.6912908554077,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 9,
@@ -433,17 +391,15 @@
     {
       "success": true,
       "task_name": "cooking",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/cooking/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 92.32771730422974,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/cooking/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 358.98979806900024,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 14,
@@ -453,17 +409,15 @@
     {
       "success": true,
       "task_name": "make_stencil",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/make_stencil/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 93.77667164802551,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/make_stencil/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 366.70188331604004,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 17,
@@ -473,17 +427,15 @@
     {
       "success": true,
       "task_name": "latte_making",
-      "regime_name": "moderate_low",
-      "model_path": "/home/ec2-user/prism-sim/models/moderate_low/latte_making/final_model",
-      "timesteps": 50000,
-      "duration_seconds": 95.23072218894958,
+      "regime_name": "extremely_low",
+      "model_path": "/home/ec2-user/prism-sim/models/extremely_low/latte_making/final_model",
+      "timesteps": 200000,
+      "duration_seconds": 372.0299484729767,
       "regime_config": {
-        "c_int": 5.0,
-        "c_fail": 10.0,
-        "ratio": 2.0,
+        "c_fail": 5.0,
         "f0_base": 0.6,
-        "lambda_forget": 0.1,
-        "description": "Casual task - low stakes"
+        "lambda_forget": 0.03,
+        "description": "Low-stakes tasks - failures minor (c_int=1 fixed)"
       },
       "task_config": {
         "n_steps": 20,

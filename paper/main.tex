@@ -1,0 +1,182 @@
+\documentclass[manuscript,review,anonymous]{acmart}
+
+% Only use packages accepted by TAPS
+\usepackage{algorithm}
+\usepackage[title]{appendix}
+\usepackage{bm}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{fancybox}
+\usepackage{float}
+\usepackage{lscape}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{soul}
+\usepackage{enumitem}
+
+
+% added package
+\usepackage{pifont}
+%\usepackage[most]{tcolorbox}
+%\tcbuselibrary{breakable}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{darkgreen}{RGB}{0,120,0}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\usepackage{pdfrender}
+\newcommand*{\boldcheckmark}{%
+  \textpdfrender{
+    TextRenderingMode=FillStroke,
+    LineWidth=.5pt, % half of the line width is outside the normal glyph
+  }{\checkmark}%
+}
+\newcommand{\system}{SYSTEM NAME}
+
+\usepackage{framed}
+\usepackage{xcolor}
+
+\definecolor{insightbg}{RGB}{250, 250, 250}
+\definecolor{insightframe}{RGB}{150, 150, 150}
+\definecolor{insightaccent}{RGB}{50, 140, 50}
+
+\newsavebox{\insightboxcontent}
+\newlength{\insightboxheight}
+
+\newenvironment{insightbox}{%
+    \begin{lrbox}{\insightboxcontent}%
+    \begin{minipage}{0.87\linewidth}%
+    \setlength{\parindent}{0pt}%
+    \small
+}{%
+    \end{minipage}%
+    \end{lrbox}%
+    \setlength{\insightboxheight}{\dimexpr\ht\insightboxcontent+\dp\insightboxcontent+17pt\relax}%
+    \par\vspace{6pt plus 2pt minus 2pt}\noindent
+    \setlength{\fboxsep}{8pt}%
+    \fcolorbox{insightframe}{insightbg}{%
+        \kern-8.5pt%
+        % \raisebox{\dimexpr-\dp\insightboxcontent-8.5pt\relax}{\textcolor{insightaccent}{\rule{3pt}{\insightboxheight}}}%
+        \kern12pt%
+        \usebox{\insightboxcontent}%
+        \kern6pt%
+    }%
+    \par\vspace{6pt plus 2pt minus 2pt}%
+}
+%% For reference
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\eqnref}[1]{Equation~\ref{#1}}
+\newcommand{\appref}[1]{Appendix~\ref{#1}}
+
+%% Table
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
+%% Abbreviations
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\eg}{\textit{e.g.},~}
+\newcommand{\ie}{\textit{i.e.},~}
+\newcommand{\etc}{\textit{etc.}}
+\newcommand{\vs}{\textit{vs.}~}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+%% Figures live in ../results/ (so figures/paper_compact/foo.png resolves there)
+\graphicspath{{../results/}{./}}
+
+\setcopyright{acmlicensed}
+
+\copyrightyear{2026}
+\acmYear{2026}
+% \setcopyright{cc}      % requires newer acmart than tectonic ships; safe to drop for local review
+% \setcctype{by}
+\acmConference[CHI '26]{Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems}{April 13--17, 2026}{Barcelona, Spain}
+\acmBooktitle{Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems (CHI '26), April 13--17, 2026, Barcelona, Spain}
+\acmPrice{}
+\acmDOI{10.1145/3772318.3791871}
+\acmISBN{979-8-4007-2278-3/2026/04}
+
+\begin{document}
+
+\title[]{}
+
+\author{Riku Arakawa}
+\orcid{0000-0001-7868-4754}
+\affiliation{%
+  \institution{Human-Computer Interaction Institute\\Carnegie Mellon University}
+  \city{Pittsburgh}
+  \state{Pennsylvania}
+  \country{USA}
+}
+\email{rarakawa@cs.cmu.edu}
+
+\author{Mayank Goel}
+\orcid{0000-0003-1237-7545}
+\affiliation{%
+  \institution{School of Computer Science\\Carnegie Mellon University}
+  \city{Pittsburgh}
+  \state{Pennsylvania}
+  \country{USA}
+}
+\email{mayankgoel@cmu.edu}
+
+\author{Antti Ourasvirta}
+\orcid{}
+\affiliation{%
+  \institution{School of Computer Science\\Carnegie Mellon University}
+  \city{Pittsburgh}
+  \state{Pennsylvania}
+  \country{USA}
+}
+\email{}
+
+\renewcommand{\shortauthors}{Arakawa et al.}
+
+\begin{abstract} % up to 150 words
+
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10003120.10003123.10011759</concept_id>
+       <concept_desc>Human-centered computing~Empirical studies in interaction design</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003120.10003138.10003140</concept_id>
+       <concept_desc>Human-centered computing~Ubiquitous and mobile computing systems and tools</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003120.10003121.10003129</concept_id>
+       <concept_desc>Human-centered computing~Interactive systems and tools</concept_desc>
+       <concept_significance>300</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Human-centered computing~Ubiquitous and mobile computing systems and tools}
+\ccsdesc[500]{Human-centered computing~Empirical studies in interaction design}
+\ccsdesc[300]{Human-centered computing~Interactive systems and tools}
+
+\keywords{}
+
+\maketitle
+
+\input{introduction.txt}
+\input{related_work.txt}
+\input{proposed_framework.txt}
+\input{framework_validation_compact.txt}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{paper}
+
+\end{document}

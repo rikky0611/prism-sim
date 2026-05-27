@@ -1,15 +1,16 @@
 """
-Procedure Assistant Simulation using Overcooked AI
+Single-agent Procedure Assistant POMDP simulation.
 
-This implements the procedure assistant POMDP formulation from modeling.pdf
-using Overcooked AI as the underlying task environment.
+Models an AI assistant that observes a human performing a procedural task
+and must decide when to intervene (remind/confirm) vs stay silent,
+balancing interruption costs against failure costs.
 
 Key design decisions:
-1. Human agent operates in the kitchen (standard Overcooked agent)
-2. Assistant observes from outside (partial observability via noisy sensors)
-3. Procedural steps extracted from recipe completion (onion soup)
-4. Memory mechanism affects failure probability at each step
-5. Interaction costs model interruption burden
+1. Partial observability: assistant sees noisy step and memory estimates
+2. Per-step failure costs derived from task step criticality
+3. Memory mechanism affects failure probability at each step
+4. Interaction costs model interruption burden
+5. Action space: silent, confirm, remind_i (critical steps only)
 """
 
 import numpy as np
@@ -20,20 +21,13 @@ import json
 
 # Import task definitions for multi-task support
 try:
-    from task_definitions import TaskDefinition
+    from task_definitions import TaskDefinition, get_task_definition
 except ImportError:
     # Fallback for when running from different directory
     import sys
     from pathlib import Path
     sys.path.append(str(Path(__file__).parent))
-    from task_definitions import TaskDefinition
-
-
-# ============================================================================
-# NOTE: PROCEDURAL STEPS ARE NOW DEFINED PER-TASK
-# ============================================================================
-# The hardcoded PROCEDURAL_STEPS, N_STEPS, and ASSISTANT_ACTIONS have been
-# removed. These are now dynamically generated based on TaskDefinition.
+    from task_definitions import TaskDefinition, get_task_definition
 
 
 # ============================================================================
@@ -41,18 +35,16 @@ except ImportError:
 # ============================================================================
 class ProcedureAssistantState:
     """
-    Latent state: x_t = (s_t, tau_t, m_t, r_t)
+    Latent state: x_t = (s_t, tau_t, m_t)
     - s_t: current procedural step (or 'done')
     - tau_t: elapsed time in current step
     - m_t: reminder memory for each step (N-dimensional vector, long-term)
-    - r_t: last reminded tick for each step (for recency calculation)
     """
     def __init__(self, n_steps: int):
-        self.current_step: int = 0  # index into PROCEDURAL_STEPS
+        self.current_step: int = 0
         self.tau: int = 0  # elapsed time in step
         self.memory: np.ndarray = np.zeros(n_steps)  # base memory for each step
-        self.last_reminded_tick: np.ndarray = np.full(n_steps, -999)  # NEW: Track reminder timing
-        self.global_tick: int = 0  # NEW: Global time counter
+        self.global_tick: int = 0
         self.is_done: bool = False
         self.total_failures: int = 0
         self.total_interactions: int = 0
@@ -64,8 +56,7 @@ class ProcedureAssistantState:
         new_state.current_step = self.current_step
         new_state.tau = self.tau
         new_state.memory = self.memory.copy()
-        new_state.last_reminded_tick = self.last_reminded_tick.copy()  # NEW
-        new_state.global_tick = self.global_tick  # NEW
+        new_state.global_tick = self.global_tick
         new_state.is_done = self.is_done
         new_state.total_failures = self.total_failures
         new_state.total_interactions = self.total_interactions
@@ -101,9 +92,9 @@ class SimulationParams:
         f0_base: float = 0.6,             # Base failure probability (60% baseline when m=0) - INCREASED for better learning
         k_memory: float = 3.0,            # Memory effect on failure (steeper curve, emphasizes timing)
 
-        # Cost structure (UPDATED: per-step costs, fixed c_int)
+        # Cost structure (per-step failure costs + communication costs)
         c_fail_per_step: Optional[np.ndarray] = None,  # NEW: Per-step failure costs array
-        c_int: float = 1.0,               # Interruption cost (FIXED to 1.0)
+        c_remind: float = 1.0,             # Remind cost (assistant intervention)
         c_nar: float = 1.0,               # Narration cost (human-initiated)
         c_resp: float = 2.0,              # Response cost (to confirm)
         c_off_timing: float = 0.5,        # Penalty for reminding wrong step (off-timing)
@@ -122,15 +113,12 @@ class SimulationParams:
         step_mean_duration: int = 30,     # Mean ticks per step
         step_std_duration: int = 10,      # Std dev of step duration
 
-        # NEW: Recency-based reminder effectiveness
-        lambda_recency: float = 0.20,     # Fast recency decay (half-life ~3.5 ticks)
-        effectiveness_recency: float = 0.95,  # Max additional prevention from recent reminder (95%)
     ):
         self.lambda_forget = lambda_forget
         self.delta_reminder = delta_reminder
         self.f0_base = f0_base
         self.k_memory = k_memory
-        self.c_int = c_int  # Fixed to 1.0
+        self.c_remind = c_remind
         self.c_nar = c_nar
         self.c_resp = c_resp
         self.c_off_timing = c_off_timing  # Penalty for off-timing reminders
@@ -138,8 +126,6 @@ class SimulationParams:
         self.obs_noise = obs_noise
         self.step_mean_duration = step_mean_duration
         self.step_std_duration = step_std_duration
-        self.lambda_recency = lambda_recency
-        self.effectiveness_recency = effectiveness_recency
 
         # Per-step failure costs (NEW primary mechanism)
         if c_fail_per_step is not None:
@@ -165,7 +151,7 @@ class SimulationParams:
             'delta_reminder': self.delta_reminder,
             'f0_base': self.f0_base,
             'k_memory': self.k_memory,
-            'c_int': self.c_int,
+            'c_remind': self.c_remind,
             'c_nar': self.c_nar,
             'c_resp': self.c_resp,
             'c_fail_per_step': self.c_fail_per_step.tolist() if isinstance(self.c_fail_per_step, np.ndarray) else self.c_fail_per_step,
@@ -173,8 +159,6 @@ class SimulationParams:
             'obs_noise': self.obs_noise,
             'step_mean_duration': self.step_mean_duration,
             'step_std_duration': self.step_std_duration,
-            'lambda_recency': self.lambda_recency,
-            'effectiveness_recency': self.effectiveness_recency,
         }
 
 
@@ -318,56 +302,21 @@ class ProcedureAssistantEnv:
         return obs
 
     def _compute_failure_probability(self, step_idx: int) -> float:
-        """
-        Failure probability with base memory AND recency bonus.
+        """Failure probability f(m) = f0 * exp(-k*m).
 
-        f(m, r) = f0_base × exp(-k × m) × (1 - ε_recency × r)
-
-        where:
-        - m: base memory (long-term procedural knowledge, decays slowly)
-        - r: recency factor (short-term reminder freshness, decays fast)
-        - ε_recency: maximum additional prevention from recent reminder (default 0.95)
+        Non-critical steps (criticality=0) always return 0.
 
         Examples:
-        - Just reminded (r=1.0, m=0.3): f = 0.6 × 0.55 × 0.05 = 0.016 (1.6% failure, 98% prevention)
-        - 10 ticks ago (r=0.5, m=0.2): f = 0.6 × 0.67 × 0.5 = 0.20 (20% failure, 80% prevention)
-        - No recent reminder (r=0, m=0): f = 0.6 × 1.0 × 1.0 = 0.60 (60% failure, baseline)
+        - m=0.0: f = 0.60 (60% failure, baseline)
+        - m=0.6: f ≈ 0.07 (7% failure)
+        - m=1.0: f ≈ 0.01 (1% failure)
         """
-        # Non-critical steps (criticality=0) cannot fail - you can't fail at trivial actions
         if step_idx < len(self.task_def.steps):
             if self.task_def.steps[step_idx].criticality == 0:
                 return 0.0
 
-        # Base failure probability (exponential decay with long-term memory)
         memory = self.pa_state.memory[step_idx]
-        base_failure_prob = self.params.f0_base * np.exp(-self.params.k_memory * memory)
-
-        # Recency bonus (strong for recent reminders, decays rapidly)
-        recency_factor = self._compute_recency_factor(step_idx)
-        recency_multiplier = 1.0 - self.params.effectiveness_recency * recency_factor
-
-        # Combined failure probability
-        final_prob = base_failure_prob * recency_multiplier
-        return np.clip(final_prob, 0.0, 1.0)
-
-    def _compute_recency_factor(self, step_idx: int) -> float:
-        """Compute recency factor: 1.0 if just reminded, decays exponentially.
-
-        Args:
-            step_idx: Index of the step
-
-        Returns:
-            Recency factor in [0, 1], where 1.0 = just reminded, 0.0 = no recent reminder
-        """
-        ticks_since_reminder = self.pa_state.global_tick - self.pa_state.last_reminded_tick[step_idx]
-
-        # If never reminded or very old, return 0
-        if ticks_since_reminder > 50:
-            return 0.0
-
-        # Exponential decay: r = exp(-λ × t)
-        recency = np.exp(-self.params.lambda_recency * ticks_since_reminder)
-        return np.clip(recency, 0.0, 1.0)
+        return float(np.clip(self.params.f0_base * np.exp(-self.params.k_memory * memory), 0.0, 1.0))
 
     def _check_step_completion(self) -> bool:
         """
@@ -390,35 +339,27 @@ class ProcedureAssistantEnv:
         return np.random.random() < hazard
 
     def _update_memory(self, assistant_action: int):
-        """
-        Update memory and track reminder timing.
+        """Update memory based on assistant action.
 
-        Base memory update: m_{n,t+1} = (1 - lambda) * m_{n,t} + Delta_A * I[a_t = remind_n]
-        Timing update: record global_tick when reminder given for recency calculation
+        m_{n,t+1} = (1 - lambda) * m_{n,t} + Delta_A * I[a_t = remind_n]
         """
-        # Decay all base memories
         self.pa_state.memory *= (1 - self.params.lambda_forget)
 
-        # If assistant gave a reminder, boost memory AND record timing
         for step_idx in range(self.n_steps):
             remind_key = f'remind_{step_idx}'
-            if remind_key in self.assistant_actions:  # Only check if this step has a reminder action
+            if remind_key in self.assistant_actions:
                 remind_action_id = self.assistant_actions[remind_key]
                 if assistant_action == remind_action_id:
                     self.pa_state.memory[step_idx] += self.params.delta_reminder
-                    self.pa_state.last_reminded_tick[step_idx] = self.pa_state.global_tick  # NEW
 
-        # Clip memories to reasonable range
         self.pa_state.memory = np.clip(self.pa_state.memory, 0, 2.0)
-
-        # Increment global time counter
-        self.pa_state.global_tick += 1  # NEW
+        self.pa_state.global_tick += 1
 
     def _sample_human_action(self, assistant_action: int, expected_value: float) -> int:
         """
         Human decides whether to communicate based on utility (Eqs. 5-6)
         P(narrate | silent) = sigma(beta * (g_t - c_nar))
-        P(respond | confirm) = sigma(beta * (g_t - c_resp - c_int))
+        P(respond | confirm) = sigma(beta * (g_t - c_resp - c_remind))
         """
         def sigmoid(x):
             return 1 / (1 + np.exp(-x))
@@ -432,7 +373,7 @@ class ProcedureAssistantEnv:
 
         elif assistant_action == self.assistant_actions['confirm']:
             # Can respond or stay silent
-            utility = expected_value - self.params.c_resp - self.params.c_int
+            utility = expected_value - self.params.c_resp - self.params.c_remind
             prob_communicate = sigmoid(self.params.beta * utility)
             return HUMAN_ACTIONS['respond'] if np.random.random() < prob_communicate else HUMAN_ACTIONS['silent']
 
@@ -497,7 +438,7 @@ class ProcedureAssistantEnv:
 
         # Add interaction costs (Eq. 7)
         if assistant_action != self.assistant_actions['silent']:
-            reward -= self.params.c_int
+            reward -= self.params.c_remind
             self.pa_state.total_interactions += 1
 
             # OFF-TIMING PENALTY: If this is a reminder for wrong step, add extra penalty
@@ -559,9 +500,9 @@ class RandomAssistantPolicy:
 
         if action_probs is None:
             # Default: 70% silent, 10% confirm, remaining split across reminders
+            # Action order: 0=silent, 1=confirm, 2..n+1=remind_i
             reminder_prob = 0.20 / n_steps if n_steps > 0 else 0.0
-            self.action_probs = np.array([0.7] + [reminder_prob] * n_steps + [0.1])
-            self.action_probs = self.action_probs[:self.n_actions]
+            self.action_probs = np.array([0.7, 0.1] + [reminder_prob] * n_steps)
             self.action_probs /= self.action_probs.sum()
         else:
             # Build action space for this task size
@@ -655,184 +596,6 @@ class ReactivePolicyHighCost:
         return self.assistant_actions['silent']
 
 
-# ============================================================================
-# SIMULATION RUNNER
-# ============================================================================
-def run_simulation(
-    policy,
-    params: SimulationParams,
-    task_def: TaskDefinition,
-    n_episodes: int = 10,
-    verbose: bool = True
-) -> Dict:
-    """Run multiple episodes and collect statistics.
-
-    Args:
-        policy: Policy object with get_action(obs) method
-        params: SimulationParams with memory/failure/cost parameters
-        task_def: TaskDefinition specifying the procedural task
-        n_episodes: Number of episodes to run
-        verbose: Whether to print progress
-
-    Returns:
-        Dictionary with episode statistics
-    """
-    env = ProcedureAssistantEnv(params, task_def)
-
-    results = {
-        'total_rewards': [],
-        'total_failures': [],
-        'total_interactions': [],
-        'episode_lengths': [],
-        'histories': [],
-    }
-
-    for episode in range(n_episodes):
-        obs = env.reset()
-        episode_reward = 0
-        done = False
-
-        while not done:
-            action = policy.get_action(obs)
-            obs, reward, done, info = env.step(action)
-            episode_reward += reward
-
-        results['total_rewards'].append(episode_reward)
-        results['total_failures'].append(env.pa_state.total_failures)
-        results['total_interactions'].append(env.pa_state.total_interactions)
-        results['episode_lengths'].append(len(env.history['rewards']))
-        results['histories'].append(env.history)
-
-        if verbose:
-            print(f"Episode {episode+1}/{n_episodes}: "
-                  f"Reward={episode_reward:.1f}, "
-                  f"Failures={env.pa_state.total_failures}, "
-                  f"Interactions={env.pa_state.total_interactions}")
-
-    # Compute summary statistics
-    results['mean_reward'] = np.mean(results['total_rewards'])
-    results['std_reward'] = np.std(results['total_rewards'])
-    results['mean_failures'] = np.mean(results['total_failures'])
-    results['mean_interactions'] = np.mean(results['total_interactions'])
-
-    return results
-
-
-# ============================================================================
-# VISUALIZATION
-# ============================================================================
-def plot_results(results_dict: Dict[str, Dict], save_path: str = None):
-    """Plot comparison of different policies/parameters"""
-
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-
-    labels = list(results_dict.keys())
-
-    # Mean rewards
-    ax = axes[0, 0]
-    means = [results_dict[label]['mean_reward'] for label in labels]
-    stds = [results_dict[label]['std_reward'] for label in labels]
-    ax.bar(labels, means, yerr=stds, capsize=5)
-    ax.set_ylabel('Mean Total Reward')
-    ax.set_title('Total Reward (higher is better)')
-    ax.axhline(y=0, color='black', linestyle='--', alpha=0.3)
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-
-    # Mean failures
-    ax = axes[0, 1]
-    failures = [results_dict[label]['mean_failures'] for label in labels]
-    ax.bar(labels, failures)
-    ax.set_ylabel('Mean Failures per Episode')
-    ax.set_title('Failure Count (lower is better)')
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-
-    # Mean interactions
-    ax = axes[1, 0]
-    interactions = [results_dict[label]['mean_interactions'] for label in labels]
-    ax.bar(labels, interactions)
-    ax.set_ylabel('Mean Interactions per Episode')
-    ax.set_title('Interaction Count')
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-
-    # Reward distribution
-    ax = axes[1, 1]
-    data = [results_dict[label]['total_rewards'] for label in labels]
-    ax.boxplot(data, labels=labels)
-    ax.set_ylabel('Total Reward')
-    ax.set_title('Reward Distribution')
-    ax.axhline(y=0, color='black', linestyle='--', alpha=0.3)
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-
-    plt.tight_layout()
-
-    if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
-        print(f"Plot saved to {save_path}")
-    else:
-        plt.savefig('simulation_results.png', dpi=150, bbox_inches='tight')
-        print("Plot saved to simulation_results.png")
-
-    return fig
-
-
-def plot_trajectory(history: Dict, save_path: str = None):
-    """Plot a single episode trajectory"""
-
-    fig, axes = plt.subplots(3, 1, figsize=(14, 10))
-
-    timesteps = range(len(history['rewards']))
-
-    # Step progression
-    ax = axes[0]
-    steps = [s for s, _ in history['step_progression']]
-    ax.plot(timesteps, steps, marker='o', markersize=2)
-    ax.set_ylabel('Procedural Step')
-    ax.set_title('Step Progression Over Time')
-    ax.set_yticks(range(N_STEPS))
-    ax.set_yticklabels(PROCEDURAL_STEPS, fontsize=8)
-    ax.grid(alpha=0.3)
-
-    # Actions and failures
-    ax = axes[1]
-    assistant_actions = history['actions_assistant']
-    failures = np.array(history['failures'], dtype=float)
-
-    # Mark interactions (non-silent actions)
-    interactions = [1 if a != ASSISTANT_ACTIONS['silent'] else 0 for a in assistant_actions]
-    ax.fill_between(timesteps, 0, interactions, alpha=0.3, label='Assistant Interaction', color='blue')
-
-    # Mark failures
-    failure_times = [t for t, f in enumerate(failures) if f]
-    ax.scatter(failure_times, [0.5] * len(failure_times), color='red', marker='x', s=100, label='Failure', zorder=5)
-
-    ax.set_ylabel('Events')
-    ax.set_ylim(-0.1, 1.1)
-    ax.legend()
-    ax.set_title('Interactions and Failures')
-    ax.grid(alpha=0.3)
-
-    # Cumulative reward
-    ax = axes[2]
-    cumulative_reward = np.cumsum(history['rewards'])
-    ax.plot(timesteps, cumulative_reward, color='green')
-    ax.set_xlabel('Time (ticks)')
-    ax.set_ylabel('Cumulative Reward')
-    ax.set_title('Cumulative Reward Over Time')
-    ax.axhline(y=0, color='black', linestyle='--', alpha=0.3)
-    ax.grid(alpha=0.3)
-
-    plt.tight_layout()
-
-    if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
-        print(f"Trajectory plot saved to {save_path}")
-    else:
-        plt.savefig('trajectory.png', dpi=150, bbox_inches='tight')
-        print("Trajectory plot saved to trajectory.png")
-
-    return fig
-
-
 if __name__ == "__main__":
     print("Procedure Assistant Simulation")
     print("=" * 60)
@@ -840,8 +603,9 @@ if __name__ == "__main__":
 
     # Test the environment
     print("Testing environment...")
+    task_def = get_task_definition('make_cereal')
     params = SimulationParams()
-    env = ProcedureAssistantEnv(params)
+    env = ProcedureAssistantEnv(params, task_def)
     obs = env.reset()
     print(f"Initial observation: step={obs['step_name']}, tau={obs['elapsed_time']}")
     print(f"Memory state: {obs['memory']}")

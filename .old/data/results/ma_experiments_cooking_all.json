@@ -1,0 +1,590 @@
+{
+  "task": "cooking",
+  "regimes": {
+    "extremely_low": {
+      "task": "cooking",
+      "regime": "extremely_low",
+      "n_critical": 4,
+      "R_complete": 10.0,
+      "baselines": {
+        "both_silent": {
+          "mean_reward": 5.34,
+          "std_reward": 1.9810098434889212,
+          "mean_failures": 2.33,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_ticks": 127.015
+        },
+        "always_narrate_silent_asst": {
+          "mean_reward": -56.6975,
+          "std_reward": 10.400468438969467,
+          "mean_failures": 2.315,
+          "mean_narrations": 124.135,
+          "mean_questions": 0.0,
+          "mean_ticks": 124.135
+        },
+        "both_random": {
+          "mean_reward": -370.6625,
+          "std_reward": 71.8106527177549,
+          "mean_failures": 0.005,
+          "mean_narrations": 21.565,
+          "mean_questions": 86.04,
+          "mean_ticks": 129.09
+        }
+      },
+      "ma_ippo": {
+        "training_log": [
+          {
+            "round": 1,
+            "mean_reward": -54.15,
+            "std_reward": 10.865656906050367,
+            "mean_failures": 1.14,
+            "mean_narrations": 69.82,
+            "mean_questions": 53.92,
+            "mean_interactions": 0.0,
+            "mean_ticks": 125.64
+          },
+          {
+            "round": 2,
+            "mean_reward": -26.43,
+            "std_reward": 6.280931459584637,
+            "mean_failures": 2.16,
+            "mean_narrations": 7.92,
+            "mean_questions": 56.3,
+            "mean_interactions": 0.0,
+            "mean_ticks": 121.82
+          },
+          {
+            "round": 3,
+            "mean_reward": -10.49,
+            "std_reward": 5.118095348857816,
+            "mean_failures": 1.26,
+            "mean_narrations": 0.0,
+            "mean_questions": 31.9,
+            "mean_interactions": 1.96,
+            "mean_ticks": 130.26
+          },
+          {
+            "round": 4,
+            "mean_reward": -8.24,
+            "std_reward": 5.391882788043524,
+            "mean_failures": 1.58,
+            "mean_narrations": 0.0,
+            "mean_questions": 25.68,
+            "mean_interactions": 2.12,
+            "mean_ticks": 124.38
+          },
+          {
+            "round": 5,
+            "mean_reward": -7.14,
+            "std_reward": 4.963909749381026,
+            "mean_failures": 1.92,
+            "mean_narrations": 0.0,
+            "mean_questions": 22.24,
+            "mean_interactions": 1.94,
+            "mean_ticks": 122.66
+          },
+          {
+            "round": 6,
+            "mean_reward": -4.71,
+            "std_reward": 4.604443506005911,
+            "mean_failures": 2.02,
+            "mean_narrations": 0.0,
+            "mean_questions": 17.38,
+            "mean_interactions": 1.68,
+            "mean_ticks": 123.96
+          },
+          {
+            "round": 7,
+            "mean_reward": -4.43,
+            "std_reward": 3.770954786257719,
+            "mean_failures": 1.68,
+            "mean_narrations": 0.0,
+            "mean_questions": 18.46,
+            "mean_interactions": 1.6,
+            "mean_ticks": 130.24
+          },
+          {
+            "round": 8,
+            "mean_reward": -7.03,
+            "std_reward": 4.834676824773296,
+            "mean_failures": 2.0,
+            "mean_narrations": 0.0,
+            "mean_questions": 22.06,
+            "mean_interactions": 1.76,
+            "mean_ticks": 130.0
+          },
+          {
+            "round": 9,
+            "mean_reward": -7.79,
+            "std_reward": 4.757194551413679,
+            "mean_failures": 1.86,
+            "mean_narrations": 0.0,
+            "mean_questions": 23.82,
+            "mean_interactions": 1.86,
+            "mean_ticks": 129.26
+          },
+          {
+            "round": 10,
+            "mean_reward": -5.42,
+            "std_reward": 5.1859039713438575,
+            "mean_failures": 2.08,
+            "mean_narrations": 0.0,
+            "mean_questions": 19.04,
+            "mean_interactions": 1.56,
+            "mean_ticks": 131.38
+          },
+          {
+            "round": 11,
+            "mean_reward": -6.31,
+            "std_reward": 5.2781530860709225,
+            "mean_failures": 1.72,
+            "mean_narrations": 0.0,
+            "mean_questions": 20.78,
+            "mean_interactions": 2.24,
+            "mean_ticks": 125.14
+          },
+          {
+            "round": 12,
+            "mean_reward": -7.12,
+            "std_reward": 5.6405318898132295,
+            "mean_failures": 1.76,
+            "mean_narrations": 0.0,
+            "mean_questions": 22.92,
+            "mean_interactions": 2.08,
+            "mean_ticks": 124.0
+          },
+          {
+            "round": 13,
+            "mean_reward": -5.63,
+            "std_reward": 4.716789162131375,
+            "mean_failures": 1.9,
+            "mean_narrations": 0.0,
+            "mean_questions": 18.82,
+            "mean_interactions": 2.12,
+            "mean_ticks": 124.96
+          },
+          {
+            "round": 14,
+            "mean_reward": -8.74,
+            "std_reward": 4.728889933166133,
+            "mean_failures": 2.14,
+            "mean_narrations": 0.0,
+            "mean_questions": 22.08,
+            "mean_interactions": 2.82,
+            "mean_ticks": 121.66
+          },
+          {
+            "round": 15,
+            "mean_reward": -7.0,
+            "std_reward": 4.603259714593562,
+            "mean_failures": 1.88,
+            "mean_narrations": 0.0,
+            "mean_questions": 19.44,
+            "mean_interactions": 2.8,
+            "mean_ticks": 127.86
+          }
+        ],
+        "final_eval": {
+          "mean_reward": -5.9,
+          "std_reward": 4.516912662427734,
+          "mean_failures": 1.77,
+          "mean_narrations": 0.0,
+          "mean_questions": 18.53,
+          "mean_interactions": 2.825,
+          "mean_ticks": 122.63
+        }
+      }
+    },
+    "balanced": {
+      "task": "cooking",
+      "regime": "balanced",
+      "n_critical": 4,
+      "R_complete": 10.0,
+      "baselines": {
+        "both_silent": {
+          "mean_reward": -27.95,
+          "std_reward": 14.613264522344075,
+          "mean_failures": 2.53,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_ticks": 124.415
+        },
+        "always_narrate_silent_asst": {
+          "mean_reward": -90.6025,
+          "std_reward": 19.07277493575594,
+          "mean_failures": 2.44,
+          "mean_narrations": 128.005,
+          "mean_questions": 0.0,
+          "mean_ticks": 128.005
+        },
+        "both_random": {
+          "mean_reward": -361.355,
+          "std_reward": 66.98209816809263,
+          "mean_failures": 0.01,
+          "mean_narrations": 20.905,
+          "mean_questions": 83.555,
+          "mean_ticks": 125.41
+        }
+      },
+      "ma_ippo": {
+        "training_log": [
+          {
+            "round": 1,
+            "mean_reward": -80.73,
+            "std_reward": 15.355197817025998,
+            "mean_failures": 1.78,
+            "mean_narrations": 57.5,
+            "mean_questions": 70.56,
+            "mean_interactions": 0.0,
+            "mean_ticks": 128.06
+          },
+          {
+            "round": 2,
+            "mean_reward": -20.92,
+            "std_reward": 13.534903028836224,
+            "mean_failures": 1.54,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.68,
+            "mean_ticks": 123.94
+          },
+          {
+            "round": 3,
+            "mean_reward": -17.12,
+            "std_reward": 12.73206974533206,
+            "mean_failures": 1.3,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.08,
+            "mean_interactions": 4.16,
+            "mean_ticks": 126.02
+          },
+          {
+            "round": 4,
+            "mean_reward": -7.48,
+            "std_reward": 7.759484518961295,
+            "mean_failures": 0.74,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.36,
+            "mean_ticks": 128.9
+          },
+          {
+            "round": 5,
+            "mean_reward": -4.32,
+            "std_reward": 10.719029806843528,
+            "mean_failures": 0.54,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.5,
+            "mean_ticks": 125.98
+          },
+          {
+            "round": 6,
+            "mean_reward": -0.92,
+            "std_reward": 7.426546976893097,
+            "mean_failures": 0.24,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.0,
+            "mean_ticks": 126.22
+          },
+          {
+            "round": 7,
+            "mean_reward": -0.56,
+            "std_reward": 6.493566046480162,
+            "mean_failures": 0.2,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.6,
+            "mean_ticks": 127.48
+          },
+          {
+            "round": 8,
+            "mean_reward": -2.56,
+            "std_reward": 10.290111758382412,
+            "mean_failures": 0.38,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.02,
+            "mean_ticks": 125.24
+          },
+          {
+            "round": 9,
+            "mean_reward": 0.42,
+            "std_reward": 5.466589430348688,
+            "mean_failures": 0.14,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.88,
+            "mean_ticks": 128.12
+          },
+          {
+            "round": 10,
+            "mean_reward": -1.12,
+            "std_reward": 8.196682255644658,
+            "mean_failures": 0.24,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.68,
+            "mean_ticks": 126.68
+          },
+          {
+            "round": 11,
+            "mean_reward": -2.64,
+            "std_reward": 9.373921271271696,
+            "mean_failures": 0.38,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.46,
+            "mean_ticks": 120.44
+          },
+          {
+            "round": 12,
+            "mean_reward": 0.8,
+            "std_reward": 6.20966987850401,
+            "mean_failures": 0.2,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.54,
+            "mean_ticks": 130.56
+          },
+          {
+            "round": 13,
+            "mean_reward": -2.14,
+            "std_reward": 9.303784176344593,
+            "mean_failures": 0.38,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.48,
+            "mean_ticks": 127.86
+          },
+          {
+            "round": 14,
+            "mean_reward": -0.56,
+            "std_reward": 7.655481696144274,
+            "mean_failures": 0.26,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.24,
+            "mean_ticks": 119.02
+          },
+          {
+            "round": 15,
+            "mean_reward": -0.56,
+            "std_reward": 8.409898929238091,
+            "mean_failures": 0.32,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.28,
+            "mean_ticks": 123.4
+          }
+        ],
+        "final_eval": {
+          "mean_reward": -1.21,
+          "std_reward": 8.963587451461606,
+          "mean_failures": 0.35,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_interactions": 5.39,
+          "mean_ticks": 124.96
+        }
+      }
+    },
+    "extremely_high": {
+      "task": "cooking",
+      "regime": "extremely_high",
+      "n_critical": 4,
+      "R_complete": 10.0,
+      "baselines": {
+        "both_silent": {
+          "mean_reward": -105.75,
+          "std_reward": 52.339636032360794,
+          "mean_failures": 2.315,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_ticks": 131.04
+        },
+        "always_narrate_silent_asst": {
+          "mean_reward": -179.7,
+          "std_reward": 46.70821662191781,
+          "mean_failures": 2.545,
+          "mean_narrations": 124.9,
+          "mean_questions": 0.0,
+          "mean_ticks": 124.9
+        },
+        "both_random": {
+          "mean_reward": -368.86,
+          "std_reward": 62.63541649897445,
+          "mean_failures": 0.01,
+          "mean_narrations": 21.845,
+          "mean_questions": 84.165,
+          "mean_ticks": 127.39
+        }
+      },
+      "ma_ippo": {
+        "training_log": [
+          {
+            "round": 1,
+            "mean_reward": -108.6,
+            "std_reward": 39.347426853607594,
+            "mean_failures": 1.12,
+            "mean_narrations": 0.0,
+            "mean_questions": 125.2,
+            "mean_interactions": 0.0,
+            "mean_ticks": 125.2
+          },
+          {
+            "round": 2,
+            "mean_reward": -120.57,
+            "std_reward": 48.61769328135591,
+            "mean_failures": 1.84,
+            "mean_narrations": 0.0,
+            "mean_questions": 77.14,
+            "mean_interactions": 0.0,
+            "mean_ticks": 127.7
+          },
+          {
+            "round": 3,
+            "mean_reward": -90.36,
+            "std_reward": 43.39804603896355,
+            "mean_failures": 1.98,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 0.82,
+            "mean_ticks": 119.42
+          },
+          {
+            "round": 4,
+            "mean_reward": -57.58,
+            "std_reward": 35.94222586318215,
+            "mean_failures": 1.2,
+            "mean_narrations": 0.0,
+            "mean_questions": 1.64,
+            "mean_interactions": 4.18,
+            "mean_ticks": 129.22
+          },
+          {
+            "round": 5,
+            "mean_reward": -47.58,
+            "std_reward": 36.946361119872144,
+            "mean_failures": 0.98,
+            "mean_narrations": 0.0,
+            "mean_questions": 1.84,
+            "mean_interactions": 4.18,
+            "mean_ticks": 127.62
+          },
+          {
+            "round": 6,
+            "mean_reward": -34.88,
+            "std_reward": 29.18468091310919,
+            "mean_failures": 0.76,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 6.46,
+            "mean_ticks": 125.24
+          },
+          {
+            "round": 7,
+            "mean_reward": -33.72,
+            "std_reward": 29.247249443323728,
+            "mean_failures": 0.76,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.12,
+            "mean_ticks": 127.14
+          },
+          {
+            "round": 8,
+            "mean_reward": -40.74,
+            "std_reward": 31.424073574251953,
+            "mean_failures": 0.92,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 4.32,
+            "mean_ticks": 120.22
+          },
+          {
+            "round": 9,
+            "mean_reward": -44.66,
+            "std_reward": 40.02029984895166,
+            "mean_failures": 1.0,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 4.36,
+            "mean_ticks": 122.78
+          },
+          {
+            "round": 10,
+            "mean_reward": -36.42,
+            "std_reward": 30.461838421211546,
+            "mean_failures": 0.8,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 5.4,
+            "mean_ticks": 131.66
+          },
+          {
+            "round": 11,
+            "mean_reward": -40.6,
+            "std_reward": 35.43501093551405,
+            "mean_failures": 0.9,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 4.82,
+            "mean_ticks": 123.18
+          },
+          {
+            "round": 12,
+            "mean_reward": -50.46,
+            "std_reward": 29.98680376432273,
+            "mean_failures": 1.0,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 9.92,
+            "mean_ticks": 126.38
+          },
+          {
+            "round": 13,
+            "mean_reward": -40.6,
+            "std_reward": 34.20540892899835,
+            "mean_failures": 0.86,
+            "mean_narrations": 0.0,
+            "mean_questions": 1.0,
+            "mean_interactions": 6.14,
+            "mean_ticks": 126.2
+          },
+          {
+            "round": 14,
+            "mean_reward": -38.34,
+            "std_reward": 33.01657765426332,
+            "mean_failures": 0.86,
+            "mean_narrations": 0.0,
+            "mean_questions": 1.6,
+            "mean_interactions": 4.18,
+            "mean_ticks": 121.52
+          },
+          {
+            "round": 15,
+            "mean_reward": -84.96,
+            "std_reward": 46.640308746833995,
+            "mean_failures": 0.74,
+            "mean_narrations": 0.0,
+            "mean_questions": 0.0,
+            "mean_interactions": 17.94,
+            "mean_ticks": 124.12
+          }
+        ],
+        "final_eval": {
+          "mean_reward": -87.625,
+          "std_reward": 38.889900681282285,
+          "mean_failures": 0.825,
+          "mean_narrations": 0.0,
+          "mean_questions": 0.0,
+          "mean_interactions": 17.705,
+          "mean_ticks": 124.785
+        }
+      }
+    }
+  }
+}

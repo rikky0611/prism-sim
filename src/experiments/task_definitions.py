@@ -53,12 +53,18 @@ class TaskDefinition:
         base_failure_cost: Base cost for a procedural failure
         interruption_cost: Cost of a single assistant interruption
         domain: Task domain (cooking, technical, crafting)
+        rollout_patterns: List of valid step orderings (each is a permutation of
+            step indices 0..N-1). One pattern is sampled uniformly at episode
+            start; the assistant does not observe which pattern was chosen.
+            Empty list → treated as [[0, 1, ..., N-1]] (deterministic order).
+            complexity = len(rollout_patterns).
     """
     task_name: str
     steps: List[StepDefinition]
     base_failure_cost: float = 20.0
     interruption_cost: float = 5.0
     domain: str = "unknown"
+    rollout_patterns: List[List[int]] = field(default_factory=list)
 
     @property
     def n_steps(self) -> int:
@@ -102,13 +108,16 @@ class TaskDefinition:
 # =============================================================================
 
 def create_latte_making_task() -> TaskDefinition:
-    """20-step latte making task (most complex, machine-based).
+    """15-step latte making task (machine-based, medium horizon).
 
     Domain: Technical (espresso machine operation)
     Characteristics:
     - Linear workflow with machine constraints
-    - Critical steps: brew_coffee, steam_milk (thermal/pressure risks)
-    - High base costs due to equipment and ingredient waste
+    - Critical steps: brew_coffee (id 5), steam_milk (id 9) — thermal/pressure risks
+    - v5: trimmed from 20 to 15 steps (dropped the trailing latte-art / cleanup
+      trivial tail) to shorten the horizon while keeping the two critical steps
+      at the same identities/positions. This eases credit assignment for the
+      assistant's now-large (2+N) remind action space.
     """
     steps = [
         StepDefinition("gather_ingredients", "Gather milk, coffee beans, cup", criticality=0.0),  # Trivial
@@ -125,12 +134,7 @@ def create_latte_making_task() -> TaskDefinition:
         StepDefinition("tap_pitcher", "Tap pitcher to remove large bubbles", criticality=0.0),  # Trivial
         StepDefinition("swirl_milk", "Swirl milk to maintain texture", criticality=0.0),  # Trivial
         StepDefinition("pour_milk_slowly", "Begin pouring milk slowly into center", criticality=0.0),  # Trivial
-        StepDefinition("create_pattern", "Pour latte art pattern", criticality=0.0),  # Trivial
-        StepDefinition("finish_pour", "Complete milk pour", criticality=0.0),  # Trivial
-        StepDefinition("wipe_cup", "Wipe any drips from cup exterior", criticality=0.0),  # Trivial
-        StepDefinition("clean_wand", "Purge and wipe steam wand", criticality=0.0),  # Trivial
-        StepDefinition("clean_portafilter", "Rinse portafilter basket", criticality=0.0),  # Trivial
-        StepDefinition("serve_latte", "Present finished latte", criticality=0.0),  # Trivial
+        StepDefinition("serve_latte", "Finish pour and present finished latte", criticality=0.0),  # Trivial
     ]
 
     return TaskDefinition(
@@ -138,7 +142,33 @@ def create_latte_making_task() -> TaskDefinition:
         steps=steps,
         base_failure_cost=25.0,  # High due to equipment and ingredient waste
         interruption_cost=5.0,
-        domain="technical"
+        domain="technical",
+        # 9 rollout patterns (15-step), preserving the path variety in the
+        # critical region:
+        #   - brew_coffee(5) before/after milk prep (7,8)
+        #   - steam_milk(9) timing vs remove_portafilter(6)
+        #   - grind_beans(1) ↔ prepare_portafilter(2)
+        #   - tap_pitcher(11) ↔ swirl_milk(12)
+        rollout_patterns=[
+            # P0: Standard
+            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+            # P1: grind_beans ↔ prepare_portafilter (1↔2)
+            [0,2,1,3,4,5,6,7,8,9,10,11,12,13,14],
+            # P2: milk prep (7,8) before brew (5,6)
+            [0,1,2,3,4,7,8,5,6,9,10,11,12,13,14],
+            # P3: P1 + P2
+            [0,2,1,3,4,7,8,5,6,9,10,11,12,13,14],
+            # P4: remove_portafilter delayed (6 moves after steam)
+            [0,1,2,3,4,5,7,8,9,6,10,11,12,13,14],
+            # P5: milk before brew + remove_portafilter delayed
+            [0,1,2,3,4,7,8,5,9,6,10,11,12,13,14],
+            # P6: tap_pitcher ↔ swirl_milk (11↔12)
+            [0,1,2,3,4,5,6,7,8,9,10,12,11,13,14],
+            # P7: P2 + tap/swirl swap
+            [0,1,2,3,4,7,8,5,6,9,10,12,11,13,14],
+            # P8: P1 + P2 + tap/swirl swap
+            [0,2,1,3,4,7,8,5,6,9,10,12,11,13,14],
+        ],
     )
 
 
@@ -168,7 +198,17 @@ def create_make_cereal_task() -> TaskDefinition:
         steps=steps,
         base_failure_cost=10.0,  # Low stakes
         interruption_cost=5.0,
-        domain="cooking"
+        domain="cooking",
+        # 6 rollout patterns: critical steps (pour_cereal=3, pour_milk=4) appear
+        # at position 3,4 or 4,5 depending on pattern → timing uncertainty rises.
+        rollout_patterns=[
+            [0, 1, 2, 3, 4, 5, 6, 7],  # Standard order
+            [0, 2, 1, 3, 4, 5, 6, 7],  # get_cereal/get_milk swapped
+            [0, 5, 1, 2, 3, 4, 6, 7],  # get_spoon early → critical at pos 4,5
+            [0, 5, 2, 1, 3, 4, 6, 7],  # get_spoon early + cereal/milk swapped
+            [0, 1, 2, 4, 3, 5, 6, 7],  # Critical order swapped (pour_milk first)
+            [0, 2, 1, 4, 3, 5, 6, 7],  # Cereal/milk swap + critical swap
+        ],
     )
 
 
@@ -402,30 +442,41 @@ def print_task_summary():
 
 
 def create_per_step_failure_costs(task_def: TaskDefinition,
-                                   base_cost: float = None) -> np.ndarray:
+                                   base_cost: float = None,
+                                   noncritical_cost: float = 1.0) -> np.ndarray:
     """Generate per-step failure cost array from task definition.
 
     This helper function creates a cost array based on task step criticalities,
     useful for the NEW cost structure in SimulationParams.
 
+    v4: non-critical steps (criticality == 0) get a small FIXED failure cost
+    (`noncritical_cost`, default 1.0) rather than 0, because every step now
+    carries a memory-modulated failure risk. Critical steps still cost
+    base_cost * criticality. Set noncritical_cost=0.0 to recover the v3
+    "non-critical steps never penalized" behavior.
+
     Args:
         task_def: Task definition with steps and criticalities
-        base_cost: Base cost to multiply by criticality.
+        base_cost: Base cost to multiply by criticality (for critical steps).
                    If None, uses task's base_failure_cost
+        noncritical_cost: Fixed failure cost for non-critical steps (v4)
 
     Returns:
         Array of per-step failure costs (shape: [n_steps])
 
     Example:
-        >>> task = get_task_definition("make_stencil")
-        >>> costs = create_per_step_failure_costs(task, base_cost=30)
+        >>> task = get_task_definition("make_cereal")
+        >>> costs = create_per_step_failure_costs(task, base_cost=15)
         >>> print(costs)
-        [30.  36.  75.  39. ...]  # 30 × criticality for each step
+        [1. 1. 1. 15. 15. 1. 1. 1.]  # critical=15, non-critical=1.0
     """
     if base_cost is None:
         base_cost = task_def.base_failure_cost
 
-    costs = np.array([base_cost * step.criticality for step in task_def.steps])
+    costs = np.array([
+        base_cost * step.criticality if step.criticality > 0 else noncritical_cost
+        for step in task_def.steps
+    ])
     return costs
 
 
