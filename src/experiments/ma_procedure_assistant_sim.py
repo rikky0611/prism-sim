@@ -790,7 +790,8 @@ class MAProcedureAssistantEnv:
     # -----------------------------------------------------------------------
     # DYNAMICS
     # -----------------------------------------------------------------------
-    def _compute_failure_probability(self, identity: int) -> float:
+    def _compute_failure_probability(self, identity: int,
+                                     memory_value: Optional[float] = None) -> float:
         """Failure probability as a function of memory at the given step IDENTITY.
 
         Logistic form (default): f(m) = f_0 * (1 - sigmoid(slope * (m - threshold))).
@@ -809,7 +810,11 @@ class MAProcedureAssistantEnv:
         c_fail_critical; non-critical = soft c_fail_noncritical), not the
         probability.
         """
-        memory = self.ma_state.memory[identity]
+        # v5+ ML-1/T4 fix: optionally evaluate failure prob at an externally
+        # provided memory value (e.g., the pre-action memory snapshot taken
+        # before this tick's question/remind boosts). This prevents the
+        # same-tick reminder from retroactively saving a failing step.
+        memory = self.ma_state.memory[identity] if memory_value is None else float(memory_value)
         if self.params.use_logistic_failure:
             z = self.params.failure_slope * (memory - self.params.failure_threshold)
             p_retrieve = 1.0 / (1.0 + np.exp(-z))
@@ -997,13 +1002,28 @@ class MAProcedureAssistantEnv:
         v5: tracks ALL steps by IDENTITY (N-dim memory_estimate), built from
         observed communicative actions only — no access to ground-truth memory.
 
-        Updates (no per-tick decay — batch decay at step transitions):
-        - Human question_next observed → memory_estimate[next_identity] += delta_q (every time)
-        - Assistant remind_i (own action) → memory_estimate[identity i] += delta_reminder (every time)
+        v5+ ML-1 fix: per-tick continuous decay, NOT step-boundary burst decay.
+        The earlier step-boundary decay (decay_factor applied in step() when
+        step_completed=True) leaked ground-truth step transitions into the
+        assistant's observation via discrete jumps in memory_estimate. We now
+        decay continuously each tick by (1 - lambda_forget); over an expected
+        dwell of ~30 ticks this matches the ground-truth's per-step burst on
+        average while removing the leakage.
+
+        Updates:
+        - Per-tick: memory_estimate *= (1 - lambda_forget) and floor (if > 0)
+        - Human question_next observed → memory_estimate[next_identity] += delta_q
+        - Assistant remind_i (own action) → memory_estimate[identity i] += delta_reminder
         """
         state = self.ma_state
 
-        # No per-tick decay — batch decay at step transitions
+        # ML-1 fix: continuous per-tick decay (no ground-truth transition signal).
+        state.memory_estimate *= (1.0 - self.params.lambda_forget)
+        if self.params.memory_floor > 0.0:
+            np.maximum(
+                state.memory_estimate, self.params.memory_floor,
+                out=state.memory_estimate,
+            )
 
         # Human question_next: boost estimate for the next identity
         # (episode_order[pos+1]), every time, consistent with ground truth.
@@ -1096,6 +1116,18 @@ class MAProcedureAssistantEnv:
         # 4. Update memory estimate (assistant's belief about critical step memory)
         self._update_memory_estimate(human_action, assistant_action)
 
+        # T4 fix: snapshot ground-truth memory for the CURRENT identity BEFORE
+        # this tick's question/remind boosts apply. The failure check below uses
+        # this pre-action value, so a same-tick reminder cannot retroactively
+        # save a step that's about to complete. The reminder still takes effect
+        # on future ticks/steps via the boosted memory written by _update_memory.
+        pre_step = self.ma_state.current_step  # capture before possible advance
+        cur_id_pre = self._current_identity(pre_step)
+        pre_action_memory_cur = (
+            float(self.ma_state.memory[cur_id_pre])
+            if cur_id_pre is not None else None
+        )
+
         # 5. Update ground truth memory (question + remind, then decay)
         self._update_memory(human_action, assistant_action)
 
@@ -1105,14 +1137,16 @@ class MAProcedureAssistantEnv:
         # 7. Compute reward
         reward = 0.0
         failure_occurred = False
-        pre_step = self.ma_state.current_step  # capture before possible advance
 
         # v5: failure is evaluated at the step IDENTITY being performed at the
         # current position (episode_order[pos]), not the raw position.
         cur_id = self._current_identity(self.ma_state.current_step)
         critical_terminal = False
         if step_completed and cur_id is not None:
-            fail_prob = self._compute_failure_probability(cur_id)
+            # T4 fix: use the pre-action memory snapshot (same identity).
+            fail_prob = self._compute_failure_probability(
+                cur_id, memory_value=pre_action_memory_cur,
+            )
             failure_occurred = bool(np.random.random() < fail_prob)
             if failure_occurred:
                 self.ma_state.total_failures += 1
@@ -1134,21 +1168,21 @@ class MAProcedureAssistantEnv:
             )
             self.ma_state.step_tau_belief[self.n_steps, 0] = 1.0
         elif step_completed:
-            # Batch memory decay at step transition: decay by tau+1 ticks.
-            # Floor at params.memory_floor (Bahrick 1984 permastore): decay
-            # cannot drop activation below the baseline retention level.
+            # Batch GROUND-TRUTH memory decay at step transition: decay by
+            # tau+1 ticks. Floor at params.memory_floor (Bahrick 1984
+            # permastore): decay cannot drop activation below the baseline
+            # retention level.
+            # ML-1 fix: memory_estimate is NOT decayed here — that would leak
+            # the ground-truth transition into the assistant's observation.
+            # memory_estimate gets continuous per-tick decay in
+            # _update_memory_estimate instead.
             elapsed = self.ma_state.tau + 1  # include current tick
             decay_factor = (1.0 - self.params.lambda_forget) ** elapsed
             self.ma_state.memory *= decay_factor
-            self.ma_state.memory_estimate *= decay_factor
             if self.params.memory_floor > 0.0:
                 np.maximum(
                     self.ma_state.memory, self.params.memory_floor,
                     out=self.ma_state.memory,
-                )
-                np.maximum(
-                    self.ma_state.memory_estimate, self.params.memory_floor,
-                    out=self.ma_state.memory_estimate,
                 )
 
             # Advance step

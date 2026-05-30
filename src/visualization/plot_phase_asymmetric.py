@@ -85,7 +85,7 @@ def load_grid(path):
 
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
-from _paper_export import add_paper_arg, export_to_paper
+from _paper_export import add_paper_arg, export_to_paper, V5_FAILURE_TAG
 
 
 def plot(results_path, output_path=None, threshold=1.0, paper=False,
@@ -211,7 +211,7 @@ def plot(results_path, output_path=None, threshold=1.0, paper=False,
     # Suptitle
     fig.suptitle(
         f'Cost-Asymmetry Phase Diagram   |   task: {task}   '
-        f'c_fail_scale={d.get("c_fail_scale",15)}   '
+        f'{V5_FAILURE_TAG}   '
         f'decay={d.get("decay_regime","")}   obs={d.get("obs_regime","")}   '
         f'seed={d.get("seed",0)}',
         fontsize=12, fontweight='bold', y=0.995,

@@ -45,7 +45,14 @@ def _build_results(task_name, decay_regime, obs_regime, c_fail_scale,
         'task': task_name,
         'decay_regime': decay_regime,
         'obs_regime': obs_regime,
-        'c_fail_scale': c_fail_scale,
+        # v5 actual failure model: critical step failure is terminal with a
+        # large fixed penalty; non-critical failure is soft and continues.
+        # The legacy `c_fail_scale` field below is vestigial (kept for
+        # backward compatibility / filename tags) and does NOT affect dynamics.
+        'c_fail_critical': 50.0,
+        'c_fail_noncritical': 1.0,
+        'terminate_on_critical_failure': True,
+        'c_fail_scale': c_fail_scale,  # legacy: vestigial in v5, no effect
         'c_off_timing': c_off_timing,
         'seed': seed,
         'c_nar_vals': c_nar_vals,

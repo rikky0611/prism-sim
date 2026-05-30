@@ -88,7 +88,7 @@ def load_seeds(paths):
 
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
-from _paper_export import add_paper_arg, export_to_paper
+from _paper_export import add_paper_arg, export_to_paper, V5_FAILURE_TAG
 
 
 def plot(paths, output_path=None, threshold=1.0, paper=False):
@@ -194,7 +194,7 @@ def plot(paths, output_path=None, threshold=1.0, paper=False):
 
     fig.suptitle(
         f'Cost-asymmetry phase diagram (multi-seed)   |   '
-        f'task: {meta.get("task")}   c_fail_scale={meta.get("c_fail_scale")}   '
+        f'task: {meta.get("task")}   {V5_FAILURE_TAG}   '
         f'seeds={seeds} ({n_seeds} total)',
         fontsize=12, fontweight='bold', y=1.00,
     )

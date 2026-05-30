@@ -62,7 +62,7 @@ def load_grid(path):
 
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
-from _paper_export import add_paper_arg, export_to_paper
+from _paper_export import add_paper_arg, export_to_paper, V5_FAILURE_TAG
 
 
 def plot(results_path, output_path=None, noise_slice=None, paper=False):
@@ -175,7 +175,7 @@ def plot(results_path, output_path=None, noise_slice=None, paper=False):
 
     fig.suptitle(
         f'Sensing Fidelity Sweep   |   task: {task}   '
-        f'c_comm={d.get("c_comm",0.5):.2f}   c_fail_scale={d.get("c_fail_scale",15)}   '
+        f'c_comm={d.get("c_comm",0.5):.2f}   {V5_FAILURE_TAG}   '
         f'seed={d.get("seed",0)}',
         fontsize=12, fontweight='bold', y=0.995,
     )

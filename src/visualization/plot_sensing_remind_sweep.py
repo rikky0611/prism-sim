@@ -61,7 +61,7 @@ def load_grid(path):
 
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
-from _paper_export import add_paper_arg, export_to_paper
+from _paper_export import add_paper_arg, export_to_paper, V5_FAILURE_TAG
 
 
 def plot(results_path, output_path=None, paper=False):
@@ -170,7 +170,7 @@ def plot(results_path, output_path=None, paper=False):
     fig.suptitle(
         f'Sensing × reminder-cost   |   task: {task}   '
         f'n_base={d.get("obs_noise",0.4)}   '
-        f'c_nar={d.get("c_nar",0.5)}   c_fail_scale={d.get("c_fail_scale",15)}   '
+        f'c_nar={d.get("c_nar",0.5)}   {V5_FAILURE_TAG}   '
         f'seed={d.get("seed",0)}',
         fontsize=12, fontweight='bold', y=1.00,
     )
